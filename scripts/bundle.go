@@ -1,0 +1,130 @@
+// Command bundle merges the modular OECS schema files (schema/1.0.0/*.schema.json)
+// into a single, self-contained JSON Schema file with no cross-file $refs.
+//
+// Usage: go run scripts/bundle.go
+//
+// Regenerate dist/1.0.0/charger.schema.json after any change under schema/1.0.0/ --
+// the output is generated, not hand-edited.
+package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"os"
+	"path/filepath"
+	"regexp"
+	"runtime"
+	"sort"
+	"strings"
+)
+
+var refPattern = regexp.MustCompile(`^(?:([a-zA-Z0-9_.\-]+)\.schema\.json)?#/\$defs/(.+)$`)
+
+func moduleName(path string) string {
+	return strings.TrimSuffix(filepath.Base(path), ".schema.json")
+}
+
+// rewriteRefs walks a decoded JSON value and rewrites every $ref so it points
+// into the bundled, module-namespaced $defs tree instead of another file.
+func rewriteRefs(node interface{}, currentModule string) interface{} {
+	switch v := node.(type) {
+	case map[string]interface{}:
+		out := make(map[string]interface{}, len(v))
+		for k, val := range v {
+			if k == "$ref" {
+				if s, ok := val.(string); ok {
+					m := refPattern.FindStringSubmatch(s)
+					if m == nil {
+						panic(fmt.Sprintf("unrecognized $ref format: %q", s))
+					}
+					target := m[1]
+					if target == "" {
+						target = currentModule
+					}
+					out[k] = fmt.Sprintf("#/$defs/%s/%s", target, m[2])
+					continue
+				}
+			}
+			out[k] = rewriteRefs(val, currentModule)
+		}
+		return out
+	case []interface{}:
+		out := make([]interface{}, len(v))
+		for i, item := range v {
+			out[i] = rewriteRefs(item, currentModule)
+		}
+		return out
+	default:
+		return node
+	}
+}
+
+func loadJSON(path string) map[string]interface{} {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		panic(err)
+	}
+	var m map[string]interface{}
+	if err := json.Unmarshal(data, &m); err != nil {
+		panic(fmt.Errorf("%s: %w", path, err))
+	}
+	return m
+}
+
+func main() {
+	_, thisFile, _, ok := runtime.Caller(0)
+	if !ok {
+		panic("cannot determine source file location")
+	}
+	repoRoot := filepath.Dir(filepath.Dir(thisFile))
+	schemaDir := filepath.Join(repoRoot, "schema", "1.0.0")
+	rootFile := filepath.Join(schemaDir, "charger.schema.json")
+	outFile := filepath.Join(repoRoot, "dist", "1.0.0", "charger.schema.json")
+
+	matches, err := filepath.Glob(filepath.Join(schemaDir, "*.schema.json"))
+	if err != nil {
+		panic(err)
+	}
+	sort.Strings(matches)
+
+	bundledDefs := make(map[string]interface{})
+	for _, f := range matches {
+		if f == rootFile {
+			continue
+		}
+		name := moduleName(f)
+		data := loadJSON(f)
+		defs, _ := data["$defs"].(map[string]interface{})
+		bundledDefs[name] = rewriteRefs(defs, name)
+	}
+
+	root := loadJSON(rootFile)
+	rootModule := moduleName(rootFile)
+
+	bundled := map[string]interface{}{
+		"$schema":              root["$schema"],
+		"$id":                  strings.Replace(root["$id"].(string), "charger.schema.json", "charger.bundled.schema.json", 1),
+		"title":                root["title"],
+		"description":          root["description"].(string) + " Bundled, self-contained form generated from schema/1.0.0/*.schema.json by scripts/bundle.go -- do not edit directly.",
+		"type":                 root["type"],
+		"properties":           rewriteRefs(root["properties"], rootModule),
+		"required":             root["required"],
+		"additionalProperties": root["additionalProperties"],
+		"$defs":                bundledDefs,
+	}
+
+	out, err := json.MarshalIndent(bundled, "", "  ")
+	if err != nil {
+		panic(err)
+	}
+
+	if err := os.MkdirAll(filepath.Dir(outFile), 0o755); err != nil {
+		panic(err)
+	}
+	if err := os.WriteFile(outFile, append(out, '\n'), 0o644); err != nil {
+		panic(err)
+	}
+
+	rel, _ := filepath.Rel(repoRoot, outFile)
+	fmt.Printf("Wrote %s\n", rel)
+}

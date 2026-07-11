@@ -1,0 +1,268 @@
+{
+  "$schema": "https://oecs.dev/schema/1.0.0/charger.schema.json",
+  "version": "1.0.0",
+  "manufacturer": {
+    "name": "Ionwave Charging Systems",
+    "country": "NL",
+    "contact": {
+      "name": "Ionwave OEM Support",
+      "email": "oem-support@ionwave.example",
+      "website": "https://ionwave.example/support"
+    }
+  },
+  "model": {
+    "name": "IW-Rapid150",
+    "partNumber": "IW-R150-DUAL",
+    "series": "Rapid",
+    "hardwareRevision": "B",
+    "releaseDate": "2025-05-01",
+    "status": "active",
+    "type": "DC",
+    "level": "DC Fast",
+    "productImageUrl": "https://ionwave.example/products/iw-rapid150.png",
+    "brandingOptions": ["white-label", "custom-faceplate", "customizable-ui", "custom-led-color"]
+  },
+  "hardware": {
+    "housing": {
+      "formFactor": "freestanding",
+      "material": "powder-coated-steel",
+      "ingressProtection": "IP55",
+      "impactRating": "IK10",
+      "operatingTemperature": { "min": -35, "max": 55, "unit": "C" },
+      "storageTemperature": { "min": -40, "max": 70, "unit": "C" },
+      "operatingHumidity": { "min": 5, "max": 95, "unit": "%RH" },
+      "dimensions": { "height": 1850, "width": 900, "depth": 700, "unit": "mm" },
+      "weight": { "value": 480, "unit": "kg" },
+      "color": "RAL 7016",
+      "coolingMethod": "forced-air",
+      "noiseLevel": { "value": 65, "unit": "dBA" }
+    },
+    "electrical": {
+      "input": {
+        "phases": 3,
+        "voltage": { "min": 342, "nominal": 400, "max": 440, "unit": "V" },
+        "frequency": { "nominal": 50, "unit": "Hz" },
+        "maxCurrent": { "value": 240, "unit": "A" },
+        "connectionType": "hardwired",
+        "powerFactor": 0.99,
+        "efficiency": 95,
+        "standbyPower": { "value": 45, "unit": "W" }
+      },
+      "output": {
+        "minPower": { "value": 5, "unit": "kW" },
+        "maxPower": { "value": 150, "unit": "kW" },
+        "ratedOutputCurrent": { "max": 375, "unit": "A" },
+        "ratedOutputVoltage": { "min": 150, "max": 920, "unit": "V" },
+        "simultaneousChargingSupported": true,
+        "dynamicPowerSharing": true
+      },
+      "protection": {
+        "residualCurrentDevice": {
+          "types": ["B"],
+          "ratedResidualCurrent": { "value": 30, "unit": "mA" },
+          "external": false
+        },
+        "surgeProtection": "Type 1+2",
+        "overVoltageCategory": "III",
+        "features": ["overcurrent", "short-circuit", "insulation-monitoring", "ground-fault", "over-temperature", "overload"]
+      }
+    },
+    "connectors": [
+      {
+        "label": "CCS2 outlet A",
+        "type": "CCS2_Combo2",
+        "currentType": "DC",
+        "ratedVoltage": { "min": 150, "max": 920, "unit": "V" },
+        "ratedCurrent": { "value": 250, "unit": "A" },
+        "maxPower": { "value": 150, "unit": "kW" },
+        "cable": {
+          "attached": true,
+          "length": { "value": 4.5, "unit": "m" },
+          "retractable": true,
+          "cooling": "liquid"
+        },
+        "connectorLock": true,
+        "meterAccuracyClass": "Class B (MID)",
+        "isoPlugAndCharge": true,
+        "bidirectional": false
+      },
+      {
+        "label": "CHAdeMO outlet B",
+        "type": "CHAdeMO",
+        "currentType": "DC",
+        "ratedVoltage": { "min": 150, "max": 500, "unit": "V" },
+        "ratedCurrent": { "value": 125, "unit": "A" },
+        "maxPower": { "value": 62.5, "unit": "kW" },
+        "cable": {
+          "attached": true,
+          "length": { "value": 4.5, "unit": "m" },
+          "retractable": true,
+          "cooling": "liquid"
+        },
+        "connectorLock": true,
+        "meterAccuracyClass": "Class B (MID)",
+        "isoPlugAndCharge": false,
+        "bidirectional": true
+      }
+    ],
+    "userInterface": {
+      "display": {
+        "type": "touchscreen",
+        "size": { "value": 38.1, "unit": "cm" },
+        "resolution": "1280x800"
+      },
+      "authenticationMethods": ["rfid", "mobile-app", "credit-card", "plug-and-charge-iso15118", "ocpp-remote-start"],
+      "languageSupport": ["en", "nl", "de", "fr"],
+      "audioFeedback": true,
+      "accessibilityFeatures": ["audio-guidance", "high-contrast-mode"]
+    },
+    "connectivity": {
+      "interfaces": ["ethernet", "rs485", "can-bus", "powerline-communication"],
+      "cellular": { "generations": ["4G-LTE", "5G"], "simSlots": 2, "esim": true }
+    },
+    "safety": {
+      "features": ["emergency-stop", "tamper-detection", "anti-theft-lock"]
+    },
+    "meter": {
+      "integrated": true,
+      "manufacturer": "EMH Metering",
+      "model": "ED350L",
+      "accuracyClass": "Class B (MID)",
+      "certification": "Eichrecht"
+    },
+    "certifications": [
+      {
+        "type": "safety",
+        "standard": "IEC 61851-23",
+        "certificateNumber": "DEKRA-2025-33110",
+        "issuingBody": "DEKRA",
+        "issueDate": "2025-03-01",
+        "expiryDate": "2030-03-01",
+        "jurisdiction": "EU",
+        "documentUrl": "https://ionwave.example/certs/dekra-2025-33110.pdf"
+      }
+    ]
+  },
+  "software": {
+    "firmware": {
+      "currentVersion": "4.1.0",
+      "updateMethods": ["ota-ocpp", "ota-vendor-cloud", "usb"]
+    },
+    "protocols": [
+      {
+        "name": "OCPP",
+        "version": "2.0.1",
+        "transport": ["json", "websocket"],
+        "securityProfile": "3 - TLS with Client Certificates",
+        "profiles": ["Core", "SmartCharging", "FirmwareManagement", "ISO15118Support", "TariffAndCost", "DisplayMessage"],
+        "certifications": [
+          {
+            "type": "protocol-conformance",
+            "standard": "OCPP 2.0.1 Certification",
+            "certificateNumber": "OCA-2091",
+            "issuingBody": "Open Charge Alliance",
+            "issueDate": "2025-06-01"
+          }
+        ],
+        "configuration": [
+          {
+            "key": "HeartbeatInterval",
+            "dataType": "integer",
+            "defaultValue": 60,
+            "minValue": 10,
+            "maxValue": 3600,
+            "unit": "s",
+            "readOnly": false,
+            "rebootRequired": false,
+            "description": "Interval between OCPP Heartbeat messages sent to the CSMS."
+          }
+        ]
+      },
+      {
+        "name": "ISO15118",
+        "version": "ISO 15118-20:2022",
+        "transport": ["xml", "tcp"],
+        "profiles": ["Plug&Charge", "Bidirectional Power Transfer"],
+        "certifications": [
+          {
+            "type": "cybersecurity",
+            "standard": "ISO/IEC 15118-20 Security",
+            "certificateNumber": "TUV-2025-77012",
+            "issuingBody": "TUV SUD",
+            "issueDate": "2025-05-15",
+            "jurisdiction": "EU"
+          }
+        ]
+      },
+      {
+        "name": "OCPI",
+        "version": "2.2.1",
+        "transport": ["https"],
+        "profiles": ["locations", "sessions", "cdrs", "tariffs", "commands"]
+      }
+    ],
+    "smartCharging": {
+      "features": ["local-load-balancing", "backend-managed-profiles", "dynamic-pricing", "v2g"],
+      "scheduleTypes": ["absolute", "recurring-daily", "relative"]
+    },
+    "configuration": [
+      {
+        "key": "MaxTotalOutputPower",
+        "dataType": "number",
+        "defaultValue": 150,
+        "minValue": 50,
+        "maxValue": 150,
+        "unit": "kW",
+        "readOnly": false,
+        "rebootRequired": true,
+        "description": "Site-configurable cap on combined output power across both connectors."
+      }
+    ],
+    "integration": {
+      "webUI": true,
+      "localInterfaces": ["http", "modbus", "webhooks"],
+      "apiDocumentationUrl": "https://ionwave.example/docs/integration-api"
+    },
+    "offlineChargingSupported": true,
+    "operatingSystem": "Linux 6.1 (Yocto)"
+  },
+  "payment": {
+    "acceptedMethods": ["contactless-card", "mobile-wallet", "mobile-app", "plug-and-charge-autocharge", "backend-invoicing"],
+    "adHocPaymentSupported": true,
+    "terminal": {
+      "manufacturer": "Castles Technology",
+      "model": "VEGA3000",
+      "cardReaderTypes": ["contactless-emv", "chip-pin"],
+      "pciCompliance": "PCI PTS 5.x"
+    }
+  },
+  "metadata": {
+    "sources": [
+      {
+        "type": "technical-specification",
+        "title": "IW-Rapid150 Technical Specification",
+        "url": "https://ionwave.example/docs/iw-rapid150-techspec.pdf",
+        "version": "Rev B",
+        "publisher": "Ionwave Charging Systems",
+        "publishedDate": "2025-04-10",
+        "retrievedDate": "2026-06-15"
+      },
+      {
+        "type": "conformance-test-report",
+        "title": "OCA OCPP 2.0.1 Certification Report - IW-Rapid150",
+        "url": "https://ionwave.example/docs/oca-ocpp201-iw-rapid150.pdf",
+        "publisher": "Open Charge Alliance",
+        "publishedDate": "2025-06-01",
+        "retrievedDate": "2026-06-15"
+      }
+    ],
+    "document": {
+      "createdAt": "2026-06-15T10:00:00Z",
+      "updatedAt": "2026-07-10T14:30:00Z",
+      "createdBy": "OECS maintainers",
+      "license": "CC-BY-4.0",
+      "language": "en",
+      "notes": "Compiled from publicly available Ionwave documentation for illustrative purposes."
+    }
+  }
+}

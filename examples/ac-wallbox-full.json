@@ -1,0 +1,245 @@
+{
+  "$schema": "https://oecs.dev/schema/1.0.0/charger.schema.json",
+  "version": "1.0.0",
+  "manufacturer": {
+    "name": "VoltGrid GmbH",
+    "country": "DE",
+    "contact": {
+      "name": "VoltGrid Technical Support",
+      "email": "support@voltgrid.example",
+      "phone": "+49-30-1234567",
+      "website": "https://voltgrid.example/support"
+    }
+  },
+  "model": {
+    "name": "VG-Home22",
+    "partNumber": "VG-H22-3P-T2",
+    "series": "Home",
+    "hardwareRevision": "C",
+    "releaseDate": "2024-03-15",
+    "status": "active",
+    "type": "AC",
+    "level": "Level 2",
+    "productImageUrl": "https://voltgrid.example/products/vg-home22.png",
+    "brandingOptions": ["custom-faceplate", "customizable-ui"]
+  },
+  "hardware": {
+    "housing": {
+      "formFactor": "wall-mounted",
+      "material": "aluminum",
+      "ingressProtection": "IP54",
+      "impactRating": "IK08",
+      "operatingTemperature": { "min": -25, "max": 50, "unit": "C" },
+      "storageTemperature": { "min": -30, "max": 70, "unit": "C" },
+      "operatingHumidity": { "min": 5, "max": 95, "unit": "%RH" },
+      "dimensions": { "height": 420, "width": 250, "depth": 140, "unit": "mm" },
+      "weight": { "value": 4.8, "unit": "kg" },
+      "color": "RAL 9016",
+      "coolingMethod": "passive",
+      "noiseLevel": { "value": 25, "unit": "dBA" }
+    },
+    "electrical": {
+      "input": {
+        "phases": 3,
+        "voltage": { "min": 207, "nominal": 230, "max": 253, "unit": "V" },
+        "frequency": { "nominal": 50, "unit": "Hz" },
+        "maxCurrent": { "value": 32, "unit": "A" },
+        "connectionType": "hardwired",
+        "powerFactor": 0.98,
+        "efficiency": 97.5,
+        "standbyPower": { "value": 2.1, "unit": "W" }
+      },
+      "output": {
+        "minPower": { "value": 1.4, "unit": "kW" },
+        "maxPower": { "value": 22, "unit": "kW" },
+        "ratedOutputCurrent": { "min": 6, "max": 32, "unit": "A" },
+        "ratedOutputVoltage": { "nominal": 400, "unit": "V" }
+      },
+      "protection": {
+        "residualCurrentDevice": {
+          "types": ["A", "integrated-6mA-DC"],
+          "ratedResidualCurrent": { "value": 30, "unit": "mA" },
+          "external": false
+        },
+        "surgeProtection": "Type 2",
+        "overVoltageCategory": "III",
+        "features": ["overcurrent", "short-circuit", "ground-fault", "over-temperature", "overload"]
+      }
+    },
+    "connectors": [
+      {
+        "label": "Connector 1",
+        "type": "Type2_Mennekes",
+        "currentType": "AC",
+        "phases": 3,
+        "ratedVoltage": { "min": 207, "max": 253, "unit": "V" },
+        "ratedCurrent": { "value": 32, "unit": "A" },
+        "maxPower": { "value": 22, "unit": "kW" },
+        "cable": {
+          "attached": true,
+          "length": { "value": 5, "unit": "m" },
+          "retractable": false,
+          "cooling": "none"
+        },
+        "connectorLock": true,
+        "meterAccuracyClass": "Class B (MID)",
+        "isoPlugAndCharge": false,
+        "bidirectional": false
+      }
+    ],
+    "userInterface": {
+      "display": {
+        "type": "led-segment"
+      },
+      "authenticationMethods": ["rfid", "mobile-app", "ocpp-remote-start"],
+      "languageSupport": ["en", "de", "fr"],
+      "audioFeedback": false,
+      "accessibilityFeatures": ["high-contrast-mode"]
+    },
+    "connectivity": {
+      "interfaces": ["ethernet", "bluetooth"],
+      "wifi": ["802.11n", "802.11ac"],
+      "cellular": { "generations": ["4G-LTE"], "simSlots": 1, "esim": false }
+    },
+    "safety": {
+      "features": ["tamper-detection", "anti-theft-lock"]
+    },
+    "meter": {
+      "integrated": true,
+      "manufacturer": "Elster",
+      "model": "AS1440",
+      "accuracyClass": "Class B (MID)",
+      "certification": "MID (2014/32/EU)"
+    },
+    "certifications": [
+      {
+        "type": "safety",
+        "standard": "IEC 61851-1",
+        "certificateNumber": "TUV-2024-88421",
+        "issuingBody": "TUV Rheinland",
+        "issueDate": "2024-01-20",
+        "expiryDate": "2029-01-20",
+        "jurisdiction": "EU",
+        "documentUrl": "https://voltgrid.example/certs/tuv-2024-88421.pdf"
+      },
+      {
+        "type": "emc",
+        "standard": "EN 61000-6-3",
+        "certificateNumber": "TUV-2024-88422",
+        "issuingBody": "TUV Rheinland",
+        "issueDate": "2024-01-20",
+        "jurisdiction": "EU"
+      }
+    ]
+  },
+  "software": {
+    "firmware": {
+      "currentVersion": "2.4.1",
+      "updateMethods": ["ota-ocpp", "ota-vendor-cloud"]
+    },
+    "protocols": [
+      {
+        "name": "OCPP",
+        "version": "1.6",
+        "transport": ["json", "websocket"],
+        "securityProfile": "3 - TLS with Client Certificates",
+        "profiles": ["Core", "FirmwareManagement", "LocalAuthListManagement", "RemoteTrigger", "SmartCharging", "Reservation"],
+        "certifications": [
+          {
+            "type": "protocol-conformance",
+            "standard": "OCPP 1.6 Certification",
+            "certificateNumber": "OCA-1621",
+            "issuingBody": "Open Charge Alliance",
+            "issueDate": "2024-02-10"
+          }
+        ],
+        "configuration": [
+          {
+            "key": "HeartbeatInterval",
+            "dataType": "integer",
+            "defaultValue": 300,
+            "minValue": 10,
+            "maxValue": 3600,
+            "unit": "s",
+            "readOnly": false,
+            "rebootRequired": false,
+            "description": "Interval between OCPP Heartbeat messages sent to the CSMS."
+          }
+        ]
+      },
+      {
+        "name": "OCPP",
+        "version": "2.0.1",
+        "transport": ["json", "websocket"],
+        "securityProfile": "3 - TLS with Client Certificates",
+        "profiles": ["Core", "SmartCharging", "FirmwareManagement", "ISO15118Support"]
+      },
+      {
+        "name": "ISO15118",
+        "version": "ISO 15118-2:2014",
+        "transport": ["xml"],
+        "profiles": ["Plug&Charge"],
+        "notes": "PnC available via optional firmware add-on."
+      }
+    ],
+    "smartCharging": {
+      "features": ["local-load-balancing", "backend-managed-profiles", "dynamic-pricing", "solar-integration"],
+      "scheduleTypes": ["absolute", "recurring-daily"]
+    },
+    "configuration": [
+      {
+        "key": "MaxChargingCurrent",
+        "dataType": "integer",
+        "defaultValue": 32,
+        "minValue": 6,
+        "maxValue": 32,
+        "unit": "A",
+        "readOnly": false,
+        "rebootRequired": false,
+        "description": "Site-configurable current cap applied to all sessions."
+      }
+    ],
+    "integration": {
+      "webUI": true,
+      "localInterfaces": ["http"],
+      "apiDocumentationUrl": "https://voltgrid.example/docs/local-api"
+    },
+    "offlineChargingSupported": true,
+    "operatingSystem": "Linux 5.10 (Yocto)"
+  },
+  "payment": {
+    "acceptedMethods": ["mobile-app", "rfid-prepaid", "backend-invoicing"],
+    "adHocPaymentSupported": false
+  },
+  "metadata": {
+    "sources": [
+      {
+        "type": "datasheet",
+        "title": "VG-Home22 Product Datasheet",
+        "url": "https://voltgrid.example/docs/vg-home22-datasheet.pdf",
+        "version": "Rev C",
+        "publisher": "VoltGrid GmbH",
+        "publishedDate": "2024-02-01",
+        "retrievedDate": "2026-06-01",
+        "checksum": { "algorithm": "sha256", "value": "b7e23ec29af22b0b4e41da31e868d57226121c84556262f6e8b4f19d1c1c8f5" }
+      },
+      {
+        "type": "technical-specification",
+        "title": "VG-Home22 Installation & Technical Manual",
+        "url": "https://voltgrid.example/docs/vg-home22-technical-manual.pdf",
+        "version": "v1.3",
+        "publisher": "VoltGrid GmbH",
+        "publishedDate": "2024-03-01",
+        "retrievedDate": "2026-06-01"
+      }
+    ],
+    "document": {
+      "createdAt": "2026-06-01T09:00:00Z",
+      "updatedAt": "2026-07-10T14:30:00Z",
+      "createdBy": "OECS maintainers",
+      "license": "CC-BY-4.0",
+      "language": "en",
+      "notes": "Compiled from publicly available VoltGrid documentation for illustrative purposes."
+    }
+  }
+}

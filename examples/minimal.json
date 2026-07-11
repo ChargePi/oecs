@@ -1,0 +1,19 @@
+{
+  "$schema": "https://oecs.dev/schema/1.0.0/charger.schema.json",
+  "version": "1.0.0",
+  "manufacturer": {
+    "name": "Acme EV Equipment"
+  },
+  "model": {
+    "name": "EV-Wall 2"
+  },
+  "hardware": {
+    "connectors": [
+      {
+        "label": "Connector 1",
+        "type": "Type2_Mennekes",
+        "currentType": "AC"
+      }
+    ]
+  }
+}
