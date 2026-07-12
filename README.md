@@ -38,7 +38,9 @@ Makefile                 `make bundle` / `make clean`
 make bundle
 ```
 
-This regenerates `dist/1.0.0/oecs.1.0.0.schema.json` — a single-file, fully self-contained equivalent of `schema/1.0.0/charger.schema.json`, at a path derived from the schema's own declared version. It's generated output, not hand-edited; re-run `make bundle` after any change under `schema/1.0.0/`. `make clean` removes `dist/`.
+This regenerates `dist/1.0.0/oecs.1.0.0.schema.json` — a single-file, fully self-contained equivalent of
+`schema/1.0.0/charger.schema.json`, at a path derived from the schema's own declared version. It's generated output, not
+hand-edited; re-run `make bundle` after any change under `schema/1.0.0/`. `make clean` removes `dist/`.
 
 ## Versioning
 
