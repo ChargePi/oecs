@@ -1,0 +1,56 @@
+# On every published release, bundle schema/1.0.0/*.schema.json into a
+# single self-contained file under dist/<version>/ and open a PR with the
+# result.
+name: Render spec on release
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  render-spec:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "stable"
+
+      - name: Bundle spec
+        run: make bundle
+
+      - name: Open PR with rendered spec
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+
+          BRANCH="spec-render/${RELEASE_TAG}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git checkout -b "$BRANCH"
+          git add -f dist/
+
+          if git diff --cached --quiet; then
+            echo "Rendered spec unchanged for ${RELEASE_TAG}; nothing to open a PR for."
+            exit 0
+          fi
+
+          git commit -m "Render bundled spec for ${RELEASE_TAG}"
+          git push origin "$BRANCH"
+
+          gh pr create \
+            --title "Rendered spec for ${RELEASE_TAG}" \
+            --body "Auto-generated bundled schema under \`dist/\` for release \`${RELEASE_TAG}\`, built by \`scripts/bundle.go\`." \
+            --base main \
+            --head "$BRANCH"
