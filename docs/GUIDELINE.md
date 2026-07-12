@@ -98,10 +98,11 @@ LED accent color, or a full white-label offering with no manufacturer branding a
       class/category value; the remaining simple presence/absence facts (overcurrent, short-circuit, insulation
       monitoring, ground fault, over-temperature, overload) are collected into one `features` array instead of six
       separate booleans.
-- **`connectors`** — one entry per physical outlet/plug, each with its own `type` (CCS2, CHAdeMO, Type 2, NACS, etc.),
-  `currentType` (AC/DC), and ratings. `label` is a free-text human identifier for readability only (e.g.
-  `"CCS2 outlet A"`) — it is **not** required to be unique and carries no semantic meaning for tooling; don't build
-  logic that keys off it. If you need to refer to "the connector that supports CCS2," filter by `type`, not by label.
+- **`connectors`** — required, at least one entry: a charger with no connector isn't a charger. One entry per physical
+  outlet/plug, each with its own `type` (CCS2, CHAdeMO, Type 2, NACS, etc.), `currentType` (AC/DC), and ratings. `label`
+  is a free-text human identifier for readability only (e.g. `"CCS2 outlet A"`) — it is **not** required to be unique
+  and carries no semantic meaning for tooling; don't build logic that keys off it. If you need to refer to "the
+  connector that supports CCS2," filter by `type`, not by label.
 - **`userInterface`** — the physical HMI: display type, supported authentication methods, language support.
 - **`connectivity`** — the network hardware. `interfaces` is a single array (`ethernet`, `bluetooth`, `rs485`,
   `can-bus`, `powerline-communication`) rather than one boolean per interface; `wifi` and `cellular` stay as their own
