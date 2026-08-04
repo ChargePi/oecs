@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://oecs.dev/schema/1.1.0/connector.schema.json",
+  "title": "OECS Connector Definitions",
+  "description": "Defines a single physical charge connector (plug or socket) exposed by a charger, including its electrical ratings and cable characteristics.",
+  "$defs": {
+    "connectorType": {
+      "type": "string",
+      "description": "Physical connector/plug standard.",
+      "enum": [
+        "Type1_J1772",
+        "Type2_Mennekes",
+        "Type3A",
+        "CCS1_Combo1",
+        "CCS2_Combo2",
+        "CHAdeMO",
+        "GBT_AC",
+        "GBT_DC",
+        "NACS_Tesla",
+        "Domestic_Socket",
+        "Industrial_IEC60309",
+        "MCS_MegawattChargingSystem",
+        "Other"
+      ]
+    },
+    "currentType": {
+      "type": "string",
+      "enum": ["AC", "DC"]
+    },
+    "cable": {
+      "type": "object",
+      "description": "Characteristics of the attached charging cable, if the connector has one permanently attached (as opposed to a socket requiring the driver's own cable).",
+      "properties": {
+        "attached": { "type": "boolean", "description": "True if a cable is permanently attached to the charger; false if the connector is a bare socket." },
+        "length": { "$ref": "common.schema.json#/$defs/quantity" },
+        "retractable": { "type": "boolean", "description": "True if the cable retracts into the housing (reel/management system) when not in use." },
+        "cooling": { "type": "string", "enum": ["none", "forced-air", "liquid"], "description": "Cable cooling method; liquid-cooled cables are common on high-power DC connectors." }
+      },
+      "additionalProperties": false
+    },
+    "connector": {
+      "type": "object",
+      "description": "A single physical connector on the charger.",
+      "properties": {
+        "label": { "type": "string", "description": "Human-readable label for this connector within the model spec, e.g. 'Connector 1', 'CCS2 outlet'. Not required to be unique; array order/position is not semantically meaningful, so use the label plus type/currentType to distinguish connectors when needed." },
+        "type": { "$ref": "#/$defs/connectorType" },
+        "currentType": { "$ref": "#/$defs/currentType" },
+        "phases": { "type": "integer", "enum": [1, 2, 3], "description": "Number of AC phases used by this connector. Omit for DC connectors." },
+        "ratedVoltage": { "$ref": "common.schema.json#/$defs/valueRange", "description": "Rated voltage range for this connector, unit typically 'V'." },
+        "ratedCurrent": { "$ref": "common.schema.json#/$defs/quantity", "description": "Maximum current this connector can deliver, unit typically 'A'." },
+        "maxPower": { "$ref": "common.schema.json#/$defs/quantity", "description": "Maximum power this connector can deliver, unit typically 'kW'." },
+        "cable": { "$ref": "#/$defs/cable" },
+        "connectorLock": { "type": "boolean", "description": "Whether the connector has an electromechanical lock actuated during charging." },
+        "meterAccuracyClass": { "type": "string", "description": "Metering accuracy class of this connector's dedicated meter, e.g. 'Class B (MID)', 'Class 1 (IEC 62053-21)'. Omit if this connector has no dedicated meter (see hardware.meter for the charger's primary meter)." },
+        "isoPlugAndCharge": { "type": "boolean", "description": "Whether this connector supports ISO 15118 Plug & Charge authentication." },
+        "bidirectional": { "type": "boolean", "description": "Whether this connector supports bidirectional power flow (V2G/V2H/V2L)." }
+      },
+      "required": ["type", "currentType"],
+      "additionalProperties": false
+    }
+  }
+}

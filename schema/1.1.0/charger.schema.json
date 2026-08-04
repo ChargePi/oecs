@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://oecs.dev/schema/1.1.0/charger.schema.json",
+  "title": "Open EV Charger Specification (OECS)",
+  "description": "Root schema for a single EV charger's functional and technical specification, covering hardware, software, payment, and provenance/compliance metadata. See /docs/GUIDELINE.md for the narrative guide to this schema.",
+  "type": "object",
+  "properties": {
+    "$schema": { "type": "string", "format": "uri" },
+    "version": {
+      "type": "string",
+      "const": "1.1.0",
+      "description": "Version of the OECS schema this document conforms to."
+    },
+    "manufacturer": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "country": { "type": "string", "description": "ISO 3166-1 alpha-2 country code of the manufacturer's headquarters." },
+        "contact": { "$ref": "common.schema.json#/$defs/contact" }
+      },
+      "required": ["name"],
+      "additionalProperties": false
+    },
+    "model": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "partNumber": { "type": "string" },
+        "series": { "type": "string" },
+        "hardwareRevision": { "type": "string" },
+        "releaseDate": { "$ref": "common.schema.json#/$defs/isoDate" },
+        "status": { "type": "string", "enum": ["pre-release", "active", "discontinued", "end-of-life"] },
+        "type": {
+          "type": "string",
+          "enum": ["AC", "DC", "portable-evse", "wireless"],
+          "description": "Fundamental charging technology."
+        },
+        "level": {
+          "type": "string",
+          "description": "Power/speed tier within the type, e.g. 'Level 1', 'Level 2' (SAE J1772 AC tiers), 'DC Fast', 'DC Ultra-Fast', 'HPC'. Free text since tier terminology varies by standard/region."
+        },
+        "productImageUrl": { "$ref": "common.schema.json#/$defs/uri" },
+        "brandingOptions": {
+          "type": "array",
+          "description": "Branding customization available to a network operator/reseller who wants to brand the unit as their own rather than the manufacturer's.",
+          "items": { "type": "string", "enum": ["white-label", "custom-faceplate", "customizable-ui", "custom-led-color"] },
+          "uniqueItems": true
+        }
+      },
+      "required": ["name"],
+      "additionalProperties": false
+    },
+    "hardware": { "$ref": "hardware.schema.json#/$defs/hardware" },
+    "software": { "$ref": "software.schema.json#/$defs/software" },
+    "payment": { "$ref": "payment.schema.json#/$defs/payment" },
+    "pricing": { "$ref": "pricing.schema.json#/$defs/pricing" },
+    "metadata": { "$ref": "metadata.schema.json#/$defs/metadata" }
+  },
+  "required": ["version", "manufacturer", "model", "hardware"],
+  "additionalProperties": false
+}

@@ -1,0 +1,158 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://oecs.dev/schema/1.1.0/software.schema.json",
+  "title": "OECS Software Definitions",
+  "description": "Defines the software/firmware capability specification of an EV charger: firmware management, communication protocols and their feature profiles, smart-charging capability, and exposed configuration options.",
+  "$defs": {
+    "firmware": {
+      "type": "object",
+      "properties": {
+        "currentVersion": { "$ref": "common.schema.json#/$defs/semanticVersion" },
+        "updateMethods": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["ota-ocpp", "ota-vendor-cloud", "usb", "local-network", "manual-service-visit"] }
+        }
+      },
+      "additionalProperties": false
+    },
+    "protocolName": {
+      "type": "string",
+      "description": "Well-known communication protocol/standard names. Use 'other' plus the 'otherName' sibling field for anything not listed.",
+      "enum": [
+        "OCPP",
+        "OCPI",
+        "OSCP",
+        "ISO15118",
+        "IEC61851",
+        "DIN70121",
+        "OpenADR",
+        "IEEE2030.5",
+        "EEBus",
+        "Modbus-TCP",
+        "Modbus-RTU",
+        "SunSpec",
+        "MQTT",
+        "REST-API",
+        "SNMP",
+        "other"
+      ]
+    },
+    "protocol": {
+      "type": "object",
+      "description": "A single communication protocol implemented by the charger, with the specific feature profiles/extensions it supports.",
+      "properties": {
+        "name": { "$ref": "#/$defs/protocolName" },
+        "otherName": { "type": "string", "description": "Required when name is 'other': the proprietary or unlisted protocol's name." },
+        "version": { "$ref": "common.schema.json#/$defs/semanticVersion" },
+        "transport": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["json", "soap", "xml", "websocket", "http", "https", "tcp", "can"] }
+        },
+        "securityProfile": {
+          "type": "string",
+          "description": "e.g. OCPP security profile 0-3 ('Unsecured Transport', 'Basic Authentication', 'TLS with Basic Authentication', 'TLS with Client Certificates')."
+        },
+        "profiles": {
+          "type": "array",
+          "description": "Supported feature profiles/functional blocks for this protocol (e.g. OCPP 1.6 profiles: Core, FirmwareManagement, LocalAuthListManagement, Reservation, SmartCharging, RemoteTrigger; OCPI modules: locations, sessions, cdrs, tariffs).",
+          "items": { "type": "string" },
+          "uniqueItems": true
+        },
+        "certifications": {
+          "type": "array",
+          "description": "Formal certifications tied specifically to this protocol/version (e.g. an OCA OCPP conformance certificate, an ISO 15118 security certification). Certifications that apply to the product as a whole rather than one protocol belong in metadata.certificates instead.",
+          "items": { "$ref": "metadata.schema.json#/$defs/certificate" }
+        },
+        "configuration": {
+          "type": "array",
+          "description": "Configuration keys/settings surfaced by this specific protocol (e.g. OCPP configuration keys like 'HeartbeatInterval'). Settings that aren't tied to one protocol belong in the top-level software.configuration instead.",
+          "items": { "$ref": "#/$defs/configurationOption" }
+        },
+        "notes": { "type": "string" }
+      },
+      "required": ["name", "version"],
+      "additionalProperties": false,
+      "if": { "properties": { "name": { "const": "other" } } },
+      "then": { "required": ["name", "version", "otherName"] }
+    },
+    "smartCharging": {
+      "type": "object",
+      "properties": {
+        "features": {
+          "type": "array",
+          "description": "'local-load-balancing': balancing across connectors/chargers without backend involvement. 'backend-managed-profiles': can accept and enforce charging profiles/schedules pushed by a backend (e.g. OCPP SetChargingProfile). 'v2g'/'v2h': vehicle-to-grid/vehicle-to-home bidirectional power flow.",
+          "items": { "type": "string", "enum": ["local-load-balancing", "backend-managed-profiles", "dynamic-pricing", "v2g", "v2h", "solar-integration"] },
+          "uniqueItems": true
+        },
+        "scheduleTypes": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["absolute", "recurring-daily", "recurring-weekly", "relative"] }
+        }
+      },
+      "additionalProperties": false
+    },
+    "integration": {
+      "type": "object",
+      "description": "Interfaces for local administration or integrating custom/third-party software, as distinct from the standardized EV-charging/cloud protocols listed in `protocols` (e.g. a local REST API used for a proprietary integration belongs here even if it happens to speak the same wire format one of those protocols uses).",
+      "properties": {
+        "webUI": { "type": "boolean", "description": "Whether the charger exposes a local web-based admin/configuration UI, reachable over the local network." },
+        "localInterfaces": {
+          "type": "array",
+          "description": "Local integration interfaces exposed for custom software, by protocol/transport.",
+          "items": { "type": "string", "enum": ["http", "grpc", "mqtt", "modbus", "websocket", "webhooks", "ssh", "serial"] },
+          "uniqueItems": true
+        },
+        "apiDocumentationUrl": { "$ref": "common.schema.json#/$defs/uri" }
+      },
+      "additionalProperties": false
+    },
+    "configurationDataType": {
+      "type": "string",
+      "enum": ["string", "integer", "number", "boolean", "enum", "date-time", "duration"]
+    },
+    "configurationOption": {
+      "type": "object",
+      "description": "A single vendor-exposed configuration key/setting (e.g. an OCPP configuration key, a Modbus register, or a proprietary config option).",
+      "properties": {
+        "key": { "type": "string", "description": "Configuration key/name as exposed by the charger, e.g. 'HeartbeatInterval'." },
+        "dataType": { "$ref": "#/$defs/configurationDataType" },
+        "defaultValue": {},
+        "allowedValues": {
+          "type": "array",
+          "items": {},
+          "description": "Enumerated allowed values, when dataType is 'enum' or the range is a fixed set."
+        },
+        "minValue": { "type": "number" },
+        "maxValue": { "type": "number" },
+        "unit": { "type": "string" },
+        "readOnly": { "type": "boolean" },
+        "rebootRequired": { "type": "boolean", "description": "Whether changing this setting requires a charger reboot to take effect." },
+        "description": { "type": "string" }
+      },
+      "required": ["key", "dataType"],
+      "additionalProperties": false
+    },
+    "software": {
+      "type": "object",
+      "description": "Complete software/firmware capability specification of the charger.",
+      "properties": {
+        "firmware": { "$ref": "#/$defs/firmware" },
+        "protocols": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/protocol" },
+          "minItems": 0
+        },
+        "smartCharging": { "$ref": "#/$defs/smartCharging" },
+        "configuration": {
+          "type": "array",
+          "description": "Configuration keys/settings not tied to a specific protocol (e.g. a site-configurable current cap enforced regardless of which protocol is in use). Protocol-specific settings belong on that protocol entry instead (software.protocols[].configuration).",
+          "items": { "$ref": "#/$defs/configurationOption" }
+        },
+        "integration": { "$ref": "#/$defs/integration" },
+        "offlineChargingSupported": { "type": "boolean", "description": "Whether the charger can authorize and run charging sessions without a live backend/CSMS connection (standalone/offline mode)." },
+        "operatingSystem": { "type": "string", "description": "e.g. 'Linux 5.10 (Yocto)', 'FreeRTOS', 'proprietary RTOS'." }
+      },
+      "additionalProperties": false
+    }
+  }
+}

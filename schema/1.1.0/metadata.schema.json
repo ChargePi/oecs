@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://oecs.dev/schema/1.1.0/metadata.schema.json",
+  "title": "OECS Metadata Definitions",
+  "description": "Defines provenance and compliance metadata for an OECS document: source documents the specification was derived from, certificates held by the product, and document-level bookkeeping.",
+  "$defs": {
+    "sourceType": {
+      "type": "string",
+      "enum": [
+        "datasheet",
+        "user-manual",
+        "installation-manual",
+        "functional-specification",
+        "technical-specification",
+        "firmware-release-notes",
+        "api-documentation",
+        "conformance-test-report",
+        "vendor-webpage",
+        "type-approval-filing",
+        "other"
+      ]
+    },
+    "source": {
+      "type": "object",
+      "description": "A document or reference that the data in this specification instance was sourced from.",
+      "properties": {
+        "type": { "$ref": "#/$defs/sourceType" },
+        "title": { "type": "string" },
+        "url": { "$ref": "common.schema.json#/$defs/uri" },
+        "version": { "type": "string", "description": "Version/revision identifier of the source document itself." },
+        "publisher": { "type": "string" },
+        "publishedDate": { "$ref": "common.schema.json#/$defs/isoDate" },
+        "retrievedDate": { "$ref": "common.schema.json#/$defs/isoDate", "description": "Date this source was consulted/retrieved when compiling this specification." },
+        "checksum": { "$ref": "common.schema.json#/$defs/checksum" },
+        "notes": { "type": "string" }
+      },
+      "required": ["type", "title"],
+      "additionalProperties": false
+    },
+    "certificateType": {
+      "type": "string",
+      "description": "This same type list is used here, in hardware.certifications, and in software.protocols[].certifications. Place a certificate as close as possible to what it certifies: on the relevant protocol entry if it's protocol-specific (e.g. an OCPP conformance certificate), on hardware.certifications if it covers the hardware/enclosure as a whole (e.g. a safety or EMC certificate), and here only if it doesn't fit either (e.g. a company-wide quality management certification).",
+      "enum": [
+        "safety",
+        "emc",
+        "type-approval",
+        "cybersecurity",
+        "protocol-conformance",
+        "energy-efficiency",
+        "environmental",
+        "quality-management",
+        "accessibility",
+        "other"
+      ]
+    },
+    "certificate": {
+      "type": "object",
+      "description": "A certification, conformance test result, or regulatory approval held by the product.",
+      "properties": {
+        "type": { "$ref": "#/$defs/certificateType" },
+        "standard": { "type": "string", "description": "The standard or scheme the certificate attests to, e.g. 'IEC 61851-1', 'UL 2594', 'UN R100', 'OCPP 2.0.1 Certification', 'Common Criteria EAL2'." },
+        "certificateNumber": { "type": "string" },
+        "issuingBody": { "type": "string", "description": "e.g. 'TUV Rheinland', 'UL LLC', 'Open Charge Alliance'." },
+        "issueDate": { "$ref": "common.schema.json#/$defs/isoDate" },
+        "expiryDate": { "$ref": "common.schema.json#/$defs/isoDate" },
+        "jurisdiction": { "type": "string", "description": "Region/country the certificate is valid for, e.g. 'EU', 'US', 'CN', 'global'." },
+        "documentUrl": { "$ref": "common.schema.json#/$defs/uri" },
+        "checksum": { "$ref": "common.schema.json#/$defs/checksum" }
+      },
+      "required": ["type", "standard"],
+      "additionalProperties": false
+    },
+    "documentInfo": {
+      "type": "object",
+      "description": "Bookkeeping about this OECS document instance itself, as distinct from the product it describes.",
+      "properties": {
+        "createdAt": { "$ref": "common.schema.json#/$defs/dateTime" },
+        "updatedAt": { "$ref": "common.schema.json#/$defs/dateTime" },
+        "createdBy": { "type": "string", "description": "Person, team, or system that compiled this specification instance." },
+        "license": { "type": "string", "description": "License under which this document is published, e.g. 'CC-BY-4.0'." },
+        "language": { "type": "string", "pattern": "^[a-zA-Z]{2,3}(-[a-zA-Z0-9]{2,8})*$", "description": "Primary BCP 47 language tag of the document content." },
+        "notes": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Complete metadata block: provenance, certificates, and document bookkeeping.",
+      "properties": {
+        "sources": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/source" }
+        },
+        "certificates": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/certificate" }
+        },
+        "document": { "$ref": "#/$defs/documentInfo" }
+      },
+      "additionalProperties": false
+    }
+  }
+}
