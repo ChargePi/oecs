@@ -1,0 +1,1421 @@
+{
+  "$defs": {
+    "common": {
+      "checksum": {
+        "additionalProperties": false,
+        "description": "Integrity hash for a referenced document or file.",
+        "properties": {
+          "algorithm": {
+            "enum": [
+              "sha256",
+              "sha384",
+              "sha512",
+              "sha1",
+              "md5"
+            ],
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "algorithm",
+          "value"
+        ],
+        "type": "object"
+      },
+      "contact": {
+        "additionalProperties": false,
+        "description": "A point of contact for an organization or document.",
+        "properties": {
+          "email": {
+            "format": "email",
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "website": {
+            "$ref": "#/$defs/common/uri"
+          }
+        },
+        "type": "object"
+      },
+      "dateTime": {
+        "description": "Timestamp in ISO 8601 / RFC 3339 form.",
+        "format": "date-time",
+        "type": "string"
+      },
+      "dimensions3D": {
+        "additionalProperties": false,
+        "description": "Physical enclosure dimensions.",
+        "properties": {
+          "depth": {
+            "minimum": 0,
+            "type": "number"
+          },
+          "height": {
+            "minimum": 0,
+            "type": "number"
+          },
+          "unit": {
+            "default": "mm",
+            "enum": [
+              "mm",
+              "cm",
+              "m",
+              "in"
+            ],
+            "type": "string"
+          },
+          "width": {
+            "minimum": 0,
+            "type": "number"
+          }
+        },
+        "required": [
+          "height",
+          "width",
+          "depth",
+          "unit"
+        ],
+        "type": "object"
+      },
+      "ikRating": {
+        "description": "IEC 62262 mechanical impact protection rating, e.g. 'IK08', 'IK10'.",
+        "pattern": "^IK(0[0-9]|10)$",
+        "type": "string"
+      },
+      "ipRating": {
+        "description": "IEC 60529 Ingress Protection rating, e.g. 'IP54', 'IP65'.",
+        "pattern": "^IP[0-9X][0-9X]([A-Z])?$",
+        "type": "string"
+      },
+      "isoDate": {
+        "description": "Calendar date in ISO 8601 form, YYYY-MM-DD.",
+        "format": "date",
+        "type": "string"
+      },
+      "quantity": {
+        "additionalProperties": false,
+        "description": "A numeric value paired with its unit of measure.",
+        "properties": {
+          "unit": {
+            "description": "Unit of measure, e.g. 'A', 'V', 'kW', 'kWh', 'mm', 'kg'.",
+            "type": "string"
+          },
+          "value": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "value",
+          "unit"
+        ],
+        "type": "object"
+      },
+      "semanticVersion": {
+        "description": "A semantic version string (SemVer 2.0.0) or, where the underlying standard does not use SemVer, the vendor/standard's native version identifier (e.g. '1.6', '2.0.1', 'ISO 15118-2:2014').",
+        "pattern": "^[0-9A-Za-z .:+_-]+$",
+        "type": "string"
+      },
+      "temperatureRange": {
+        "additionalProperties": false,
+        "anyOf": [
+          {
+            "required": [
+              "min"
+            ]
+          },
+          {
+            "required": [
+              "max"
+            ]
+          },
+          {
+            "required": [
+              "nominal"
+            ]
+          }
+        ],
+        "description": "A minimum/maximum/nominal temperature range.",
+        "properties": {
+          "max": {
+            "type": "number"
+          },
+          "min": {
+            "type": "number"
+          },
+          "nominal": {
+            "type": "number"
+          },
+          "unit": {
+            "description": "Celsius or Fahrenheit.",
+            "enum": [
+              "C",
+              "F"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "unit"
+        ],
+        "type": "object"
+      },
+      "uri": {
+        "description": "Absolute URI/URL.",
+        "format": "uri",
+        "type": "string"
+      },
+      "valueRange": {
+        "additionalProperties": false,
+        "anyOf": [
+          {
+            "required": [
+              "min"
+            ]
+          },
+          {
+            "required": [
+              "max"
+            ]
+          },
+          {
+            "required": [
+              "nominal"
+            ]
+          }
+        ],
+        "description": "A minimum/maximum/nominal numeric range with a shared unit.",
+        "properties": {
+          "max": {
+            "type": "number"
+          },
+          "min": {
+            "type": "number"
+          },
+          "nominal": {
+            "type": "number"
+          },
+          "unit": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "unit"
+        ],
+        "type": "object"
+      }
+    },
+    "connector": {
+      "cable": {
+        "additionalProperties": false,
+        "description": "Characteristics of the attached charging cable, if the connector has one permanently attached (as opposed to a socket requiring the driver's own cable).",
+        "properties": {
+          "attached": {
+            "description": "True if a cable is permanently attached to the charger; false if the connector is a bare socket.",
+            "type": "boolean"
+          },
+          "cooling": {
+            "description": "Cable cooling method; liquid-cooled cables are common on high-power DC connectors.",
+            "enum": [
+              "none",
+              "forced-air",
+              "liquid"
+            ],
+            "type": "string"
+          },
+          "length": {
+            "$ref": "#/$defs/common/quantity"
+          },
+          "retractable": {
+            "description": "True if the cable retracts into the housing (reel/management system) when not in use.",
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "connector": {
+        "additionalProperties": false,
+        "description": "A single physical connector on the charger.",
+        "properties": {
+          "bidirectional": {
+            "description": "Whether this connector supports bidirectional power flow (V2G/V2H/V2L).",
+            "type": "boolean"
+          },
+          "cable": {
+            "$ref": "#/$defs/connector/cable"
+          },
+          "connectorLock": {
+            "description": "Whether the connector has an electromechanical lock actuated during charging.",
+            "type": "boolean"
+          },
+          "currentType": {
+            "$ref": "#/$defs/connector/currentType"
+          },
+          "isoPlugAndCharge": {
+            "description": "Whether this connector supports ISO 15118 Plug \u0026 Charge authentication.",
+            "type": "boolean"
+          },
+          "label": {
+            "description": "Human-readable label for this connector within the model spec, e.g. 'Connector 1', 'CCS2 outlet'. Not required to be unique; array order/position is not semantically meaningful, so use the label plus type/currentType to distinguish connectors when needed.",
+            "type": "string"
+          },
+          "maxPower": {
+            "$ref": "#/$defs/common/quantity",
+            "description": "Maximum power this connector can deliver, unit typically 'kW'."
+          },
+          "meterAccuracyClass": {
+            "description": "Metering accuracy class of this connector's dedicated meter, e.g. 'Class B (MID)', 'Class 1 (IEC 62053-21)'. Omit if this connector has no dedicated meter (see hardware.meter for the charger's primary meter).",
+            "type": "string"
+          },
+          "phases": {
+            "description": "Number of AC phases used by this connector. Omit for DC connectors.",
+            "enum": [
+              1,
+              2,
+              3
+            ],
+            "type": "integer"
+          },
+          "ratedCurrent": {
+            "$ref": "#/$defs/common/quantity",
+            "description": "Maximum current this connector can deliver, unit typically 'A'."
+          },
+          "ratedVoltage": {
+            "$ref": "#/$defs/common/valueRange",
+            "description": "Rated voltage range for this connector, unit typically 'V'."
+          },
+          "type": {
+            "$ref": "#/$defs/connector/connectorType"
+          }
+        },
+        "required": [
+          "type",
+          "currentType"
+        ],
+        "type": "object"
+      },
+      "connectorType": {
+        "description": "Physical connector/plug standard.",
+        "enum": [
+          "Type1_J1772",
+          "Type2_Mennekes",
+          "Type3A",
+          "CCS1_Combo1",
+          "CCS2_Combo2",
+          "CHAdeMO",
+          "GBT_AC",
+          "GBT_DC",
+          "NACS_Tesla",
+          "Domestic_Socket",
+          "Industrial_IEC60309",
+          "MCS_MegawattChargingSystem",
+          "Other"
+        ],
+        "type": "string"
+      },
+      "currentType": {
+        "enum": [
+          "AC",
+          "DC"
+        ],
+        "type": "string"
+      }
+    },
+    "hardware": {
+      "connectivity": {
+        "additionalProperties": false,
+        "description": "Physical/network connectivity hardware, distinct from the application-layer protocols described in the software specification.",
+        "properties": {
+          "cellular": {
+            "additionalProperties": false,
+            "description": "Omit this field entirely if the charger has no cellular radio.",
+            "properties": {
+              "esim": {
+                "type": "boolean"
+              },
+              "generations": {
+                "items": {
+                  "enum": [
+                    "2G",
+                    "3G",
+                    "4G-LTE",
+                    "5G",
+                    "NB-IoT",
+                    "LTE-M"
+                  ],
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "simSlots": {
+                "minimum": 0,
+                "type": "integer"
+              }
+            },
+            "type": "object"
+          },
+          "interfaces": {
+            "description": "Physical interfaces present besides Wi-Fi/cellular, which are detailed separately below. 'powerline-communication' is PLC per ISO 15118 / IEC 61851, used for HLC over the charging cable's CP/PP lines.",
+            "items": {
+              "enum": [
+                "ethernet",
+                "bluetooth",
+                "rs485",
+                "can-bus",
+                "powerline-communication"
+              ],
+              "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "wifi": {
+            "description": "Supported Wi-Fi standards. Omit the field (or leave empty) if the charger has no Wi-Fi radio.",
+            "items": {
+              "enum": [
+                "802.11a",
+                "802.11b",
+                "802.11g",
+                "802.11n",
+                "802.11ac",
+                "802.11ax"
+              ],
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "display": {
+        "additionalProperties": false,
+        "properties": {
+          "resolution": {
+            "description": "e.g. '800x480'.",
+            "type": "string"
+          },
+          "size": {
+            "$ref": "#/$defs/common/quantity",
+            "description": "Diagonal screen size, unit typically 'cm'."
+          },
+          "type": {
+            "enum": [
+              "none",
+              "led-indicator",
+              "led-segment",
+              "monochrome-lcd",
+              "color-lcd",
+              "touchscreen"
+            ],
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "electrical": {
+        "additionalProperties": false,
+        "description": "The charger's electrical characteristics: grid supply (input), delivery capability (output), and protection devices, grouped together since all three describe the same electrical system.",
+        "properties": {
+          "input": {
+            "$ref": "#/$defs/hardware/electricalInput"
+          },
+          "output": {
+            "$ref": "#/$defs/hardware/powerOutput"
+          },
+          "protection": {
+            "$ref": "#/$defs/hardware/protection"
+          }
+        },
+        "type": "object"
+      },
+      "electricalInput": {
+        "additionalProperties": false,
+        "description": "Characteristics of the grid/supply connection feeding the charger.",
+        "properties": {
+          "connectionType": {
+            "description": "Whether the unit is permanently hardwired to the supply or connects via an industrial plug.",
+            "enum": [
+              "hardwired",
+              "plug-in"
+            ],
+            "type": "string"
+          },
+          "efficiency": {
+            "description": "Rated AC-to-DC (or pass-through) conversion efficiency in percent, at rated load.",
+            "maximum": 100,
+            "minimum": 0,
+            "type": "number"
+          },
+          "frequency": {
+            "$ref": "#/$defs/common/valueRange",
+            "description": "Unit typically 'Hz'."
+          },
+          "maxCurrent": {
+            "$ref": "#/$defs/common/quantity",
+            "description": "Maximum input current draw, unit typically 'A'."
+          },
+          "phases": {
+            "enum": [
+              1,
+              2,
+              3
+            ],
+            "type": "integer"
+          },
+          "powerFactor": {
+            "maximum": 1,
+            "minimum": 0,
+            "type": "number"
+          },
+          "standbyPower": {
+            "$ref": "#/$defs/common/quantity",
+            "description": "Idle/standby power draw, unit typically 'W'."
+          },
+          "voltage": {
+            "$ref": "#/$defs/common/valueRange",
+            "description": "Unit typically 'V'."
+          }
+        },
+        "type": "object"
+      },
+      "hardware": {
+        "additionalProperties": false,
+        "description": "Complete hardware specification of the charger.",
+        "properties": {
+          "certifications": {
+            "description": "Formal certifications tied to the hardware/enclosure as a whole (e.g. safety, EMC, type approval). Certifications specific to a single protocol belong on that protocol entry instead (software.protocols[].certifications); certifications that don't fit either place (e.g. company-wide quality management) belong in metadata.certificates.",
+            "items": {
+              "$ref": "#/$defs/metadata/certificate"
+            },
+            "type": "array"
+          },
+          "connectivity": {
+            "$ref": "#/$defs/hardware/connectivity"
+          },
+          "connectors": {
+            "items": {
+              "$ref": "#/$defs/connector/connector"
+            },
+            "minItems": 1,
+            "type": "array"
+          },
+          "electrical": {
+            "$ref": "#/$defs/hardware/electrical"
+          },
+          "housing": {
+            "$ref": "#/$defs/hardware/housing"
+          },
+          "meter": {
+            "$ref": "#/$defs/hardware/meter"
+          },
+          "safety": {
+            "$ref": "#/$defs/hardware/safety"
+          },
+          "userInterface": {
+            "$ref": "#/$defs/hardware/userInterface"
+          }
+        },
+        "required": [
+          "connectors"
+        ],
+        "type": "object"
+      },
+      "housing": {
+        "additionalProperties": false,
+        "description": "Enclosure and mechanical characteristics.",
+        "properties": {
+          "color": {
+            "type": "string"
+          },
+          "coolingMethod": {
+            "enum": [
+              "passive",
+              "forced-air",
+              "liquid"
+            ],
+            "type": "string"
+          },
+          "dimensions": {
+            "$ref": "#/$defs/common/dimensions3D"
+          },
+          "formFactor": {
+            "description": "Physical mounting/enclosure style. 'freestanding' covers self-contained units that stand on their own base on the ground (posts, columns, larger cabinets); 'cabinet' is for a separate power-electronics enclosure in split systems, paired with a smaller wall- or freestanding-mounted user-facing dispenser.",
+            "enum": [
+              "wall-mounted",
+              "freestanding",
+              "pole-mounted",
+              "ceiling-mounted",
+              "portable",
+              "cabinet"
+            ],
+            "type": "string"
+          },
+          "impactRating": {
+            "$ref": "#/$defs/common/ikRating"
+          },
+          "ingressProtection": {
+            "$ref": "#/$defs/common/ipRating"
+          },
+          "material": {
+            "enum": [
+              "aluminum",
+              "stainless-steel",
+              "powder-coated-steel",
+              "polycarbonate",
+              "abs-plastic",
+              "composite",
+              "other"
+            ],
+            "type": "string"
+          },
+          "noiseLevel": {
+            "$ref": "#/$defs/common/quantity",
+            "description": "Acoustic noise emission, unit typically 'dBA'."
+          },
+          "operatingHumidity": {
+            "$ref": "#/$defs/common/valueRange",
+            "description": "Relative humidity range, unit '%RH'."
+          },
+          "operatingTemperature": {
+            "$ref": "#/$defs/common/temperatureRange",
+            "description": "Ambient operating temperature range."
+          },
+          "storageTemperature": {
+            "$ref": "#/$defs/common/temperatureRange"
+          },
+          "weight": {
+            "$ref": "#/$defs/common/quantity"
+          }
+        },
+        "type": "object"
+      },
+      "meter": {
+        "additionalProperties": false,
+        "description": "The charger's primary energy meter, used for session metering and (where billing-grade) invoicing.",
+        "properties": {
+          "accuracyClass": {
+            "description": "e.g. 'Class B (MID)', 'Class 1 (IEC 62053-21)'.",
+            "type": "string"
+          },
+          "certification": {
+            "description": "Legal metrology certification, e.g. 'MID (2014/32/EU)', 'ANSI C12.20', 'Eichrecht'. Its presence is what makes metering suitable for direct billing/invoicing; omit if the meter has no such certification.",
+            "type": "string"
+          },
+          "integrated": {
+            "description": "True if the meter is built into the charger; false if metering is provided by a separate, externally installed meter.",
+            "type": "boolean"
+          },
+          "manufacturer": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "powerOutput": {
+        "additionalProperties": false,
+        "description": "Aggregate power delivery capability of the charger (a single connector's individual rating is described in the connector object).",
+        "properties": {
+          "dynamicPowerSharing": {
+            "description": "Only meaningful when there are 2+ connectors. Whether the charger dynamically splits/reallocates its total power budget across concurrently active sessions, rather than each connector having a fixed independent rating.",
+            "type": "boolean"
+          },
+          "maxPower": {
+            "$ref": "#/$defs/common/quantity"
+          },
+          "minPower": {
+            "$ref": "#/$defs/common/quantity"
+          },
+          "ratedOutputCurrent": {
+            "$ref": "#/$defs/common/valueRange",
+            "description": "Unit typically 'A'."
+          },
+          "ratedOutputVoltage": {
+            "$ref": "#/$defs/common/valueRange",
+            "description": "Unit typically 'V'. Relevant primarily for DC chargers."
+          },
+          "simultaneousChargingSupported": {
+            "description": "Only meaningful when there are 2+ connectors. True if more than one connector can actively deliver power at once; false if a second connector just queues behind the first (only one session runs at a time even though multiple connectors exist).",
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "protection": {
+        "additionalProperties": false,
+        "description": "Electrical protection and safety devices built into the charger.",
+        "properties": {
+          "features": {
+            "description": "Protection features present, beyond RCD/surge/overvoltage handled by the more detailed fields above. 'insulation-monitoring' (IMD) is typically required on DC chargers.",
+            "items": {
+              "enum": [
+                "overcurrent",
+                "short-circuit",
+                "insulation-monitoring",
+                "ground-fault",
+                "over-temperature",
+                "overload"
+              ],
+              "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "overVoltageCategory": {
+            "description": "IEC 60664-1 overvoltage category.",
+            "enum": [
+              "I",
+              "II",
+              "III",
+              "IV"
+            ],
+            "type": "string"
+          },
+          "residualCurrentDevice": {
+            "additionalProperties": false,
+            "properties": {
+              "external": {
+                "description": "True if RCD protection must be supplied externally (upstream) rather than being integrated.",
+                "type": "boolean"
+              },
+              "ratedResidualCurrent": {
+                "$ref": "#/$defs/common/quantity",
+                "description": "Unit typically 'mA'."
+              },
+              "types": {
+                "description": "RCD/RCM types integrated, per IEC 62955 / IEC 60755 classification.",
+                "items": {
+                  "enum": [
+                    "AC",
+                    "A",
+                    "B",
+                    "F",
+                    "integrated-6mA-DC"
+                  ],
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "type": "object"
+          },
+          "surgeProtection": {
+            "description": "SPD class per IEC 61643, e.g. 'Type 1', 'Type 2', 'Type 1+2'. Omit if the charger has no surge protection device.",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "safety": {
+        "additionalProperties": false,
+        "properties": {
+          "features": {
+            "items": {
+              "enum": [
+                "emergency-stop",
+                "tamper-detection",
+                "anti-theft-lock"
+              ],
+              "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+          }
+        },
+        "type": "object"
+      },
+      "userInterface": {
+        "additionalProperties": false,
+        "properties": {
+          "accessibilityFeatures": {
+            "items": {
+              "enum": [
+                "audio-guidance",
+                "braille",
+                "adjustable-height",
+                "high-contrast-mode",
+                "wheelchair-accessible-clearance"
+              ],
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "audioFeedback": {
+            "type": "boolean"
+          },
+          "authenticationMethods": {
+            "items": {
+              "enum": [
+                "rfid",
+                "mobile-app",
+                "plug-and-charge-iso15118",
+                "credit-card",
+                "qr-code",
+                "ocpp-remote-start",
+                "pin-code",
+                "autostart-free-vend"
+              ],
+              "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "display": {
+            "$ref": "#/$defs/hardware/display"
+          },
+          "languageSupport": {
+            "description": "BCP 47 language tags supported by the on-device UI.",
+            "items": {
+              "pattern": "^[a-zA-Z]{2,3}(-[a-zA-Z0-9]{2,8})*$",
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      }
+    },
+    "metadata": {
+      "certificate": {
+        "additionalProperties": false,
+        "description": "A certification, conformance test result, or regulatory approval held by the product.",
+        "properties": {
+          "certificateNumber": {
+            "type": "string"
+          },
+          "checksum": {
+            "$ref": "#/$defs/common/checksum"
+          },
+          "documentUrl": {
+            "$ref": "#/$defs/common/uri"
+          },
+          "expiryDate": {
+            "$ref": "#/$defs/common/isoDate"
+          },
+          "issueDate": {
+            "$ref": "#/$defs/common/isoDate"
+          },
+          "issuingBody": {
+            "description": "e.g. 'TUV Rheinland', 'UL LLC', 'Open Charge Alliance'.",
+            "type": "string"
+          },
+          "jurisdiction": {
+            "description": "Region/country the certificate is valid for, e.g. 'EU', 'US', 'CN', 'global'.",
+            "type": "string"
+          },
+          "standard": {
+            "description": "The standard or scheme the certificate attests to, e.g. 'IEC 61851-1', 'UL 2594', 'UN R100', 'OCPP 2.0.1 Certification', 'Common Criteria EAL2'.",
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/$defs/metadata/certificateType"
+          }
+        },
+        "required": [
+          "type",
+          "standard"
+        ],
+        "type": "object"
+      },
+      "certificateType": {
+        "description": "This same type list is used here, in hardware.certifications, and in software.protocols[].certifications. Place a certificate as close as possible to what it certifies: on the relevant protocol entry if it's protocol-specific (e.g. an OCPP conformance certificate), on hardware.certifications if it covers the hardware/enclosure as a whole (e.g. a safety or EMC certificate), and here only if it doesn't fit either (e.g. a company-wide quality management certification).",
+        "enum": [
+          "safety",
+          "emc",
+          "type-approval",
+          "cybersecurity",
+          "protocol-conformance",
+          "energy-efficiency",
+          "environmental",
+          "quality-management",
+          "accessibility",
+          "other"
+        ],
+        "type": "string"
+      },
+      "documentInfo": {
+        "additionalProperties": false,
+        "description": "Bookkeeping about this OECS document instance itself, as distinct from the product it describes.",
+        "properties": {
+          "createdAt": {
+            "$ref": "#/$defs/common/dateTime"
+          },
+          "createdBy": {
+            "description": "Person, team, or system that compiled this specification instance.",
+            "type": "string"
+          },
+          "language": {
+            "description": "Primary BCP 47 language tag of the document content.",
+            "pattern": "^[a-zA-Z]{2,3}(-[a-zA-Z0-9]{2,8})*$",
+            "type": "string"
+          },
+          "license": {
+            "description": "License under which this document is published, e.g. 'CC-BY-4.0'.",
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "$ref": "#/$defs/common/dateTime"
+          }
+        },
+        "type": "object"
+      },
+      "metadata": {
+        "additionalProperties": false,
+        "description": "Complete metadata block: provenance, certificates, and document bookkeeping.",
+        "properties": {
+          "certificates": {
+            "items": {
+              "$ref": "#/$defs/metadata/certificate"
+            },
+            "type": "array"
+          },
+          "document": {
+            "$ref": "#/$defs/metadata/documentInfo"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/$defs/metadata/source"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "source": {
+        "additionalProperties": false,
+        "description": "A document or reference that the data in this specification instance was sourced from.",
+        "properties": {
+          "checksum": {
+            "$ref": "#/$defs/common/checksum"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "publishedDate": {
+            "$ref": "#/$defs/common/isoDate"
+          },
+          "publisher": {
+            "type": "string"
+          },
+          "retrievedDate": {
+            "$ref": "#/$defs/common/isoDate",
+            "description": "Date this source was consulted/retrieved when compiling this specification."
+          },
+          "title": {
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/$defs/metadata/sourceType"
+          },
+          "url": {
+            "$ref": "#/$defs/common/uri"
+          },
+          "version": {
+            "description": "Version/revision identifier of the source document itself.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "title"
+        ],
+        "type": "object"
+      },
+      "sourceType": {
+        "enum": [
+          "datasheet",
+          "user-manual",
+          "installation-manual",
+          "functional-specification",
+          "technical-specification",
+          "firmware-release-notes",
+          "api-documentation",
+          "conformance-test-report",
+          "vendor-webpage",
+          "type-approval-filing",
+          "other"
+        ],
+        "type": "string"
+      }
+    },
+    "payment": {
+      "payment": {
+        "additionalProperties": false,
+        "description": "Complete payment capability specification of the charger.",
+        "properties": {
+          "acceptedMethods": {
+            "items": {
+              "$ref": "#/$defs/payment/paymentMethod"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "adHocPaymentSupported": {
+            "description": "Whether a driver can pay without a pre-existing app, subscription, or RFID card (e.g. tap a contactless bank card). Required for public DC chargers under regulations such as the EU AFIR.",
+            "type": "boolean"
+          },
+          "terminal": {
+            "$ref": "#/$defs/payment/paymentTerminal"
+          }
+        },
+        "type": "object"
+      },
+      "paymentMethod": {
+        "description": "A way a driver can pay for a session, distinct from how they authenticate/start it (see hardware.userInterface.authenticationMethods).",
+        "enum": [
+          "contactless-card",
+          "mobile-wallet",
+          "rfid-prepaid",
+          "mobile-app",
+          "plug-and-charge-autocharge",
+          "backend-invoicing",
+          "free-of-charge"
+        ],
+        "type": "string"
+      },
+      "paymentTerminal": {
+        "additionalProperties": false,
+        "description": "Integrated payment card terminal hardware, if the charger accepts card payment directly rather than relying solely on an app/backend.",
+        "properties": {
+          "cardReaderTypes": {
+            "items": {
+              "enum": [
+                "contactless-emv",
+                "chip-pin",
+                "magstripe"
+              ],
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "manufacturer": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "pciCompliance": {
+            "description": "e.g. 'PCI PTS 5.x', 'PCI DSS'.",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      }
+    },
+    "software": {
+      "configurationDataType": {
+        "enum": [
+          "string",
+          "integer",
+          "number",
+          "boolean",
+          "enum",
+          "date-time",
+          "duration"
+        ],
+        "type": "string"
+      },
+      "configurationOption": {
+        "additionalProperties": false,
+        "description": "A single vendor-exposed configuration key/setting (e.g. an OCPP configuration key, a Modbus register, or a proprietary config option).",
+        "properties": {
+          "allowedValues": {
+            "description": "Enumerated allowed values, when dataType is 'enum' or the range is a fixed set.",
+            "items": {},
+            "type": "array"
+          },
+          "dataType": {
+            "$ref": "#/$defs/software/configurationDataType"
+          },
+          "defaultValue": {},
+          "description": {
+            "type": "string"
+          },
+          "key": {
+            "description": "Configuration key/name as exposed by the charger, e.g. 'HeartbeatInterval'.",
+            "type": "string"
+          },
+          "maxValue": {
+            "type": "number"
+          },
+          "minValue": {
+            "type": "number"
+          },
+          "readOnly": {
+            "type": "boolean"
+          },
+          "rebootRequired": {
+            "description": "Whether changing this setting requires a charger reboot to take effect.",
+            "type": "boolean"
+          },
+          "unit": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "key",
+          "dataType"
+        ],
+        "type": "object"
+      },
+      "firmware": {
+        "additionalProperties": false,
+        "properties": {
+          "currentVersion": {
+            "$ref": "#/$defs/common/semanticVersion"
+          },
+          "updateMethods": {
+            "items": {
+              "enum": [
+                "ota-ocpp",
+                "ota-vendor-cloud",
+                "usb",
+                "local-network",
+                "manual-service-visit"
+              ],
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "integration": {
+        "additionalProperties": false,
+        "description": "Interfaces for local administration or integrating custom/third-party software, as distinct from the standardized EV-charging/cloud protocols listed in `protocols` (e.g. a local REST API used for a proprietary integration belongs here even if it happens to speak the same wire format one of those protocols uses).",
+        "properties": {
+          "apiDocumentationUrl": {
+            "$ref": "#/$defs/common/uri"
+          },
+          "localInterfaces": {
+            "description": "Local integration interfaces exposed for custom software, by protocol/transport.",
+            "items": {
+              "enum": [
+                "http",
+                "grpc",
+                "mqtt",
+                "modbus",
+                "websocket",
+                "webhooks",
+                "ssh",
+                "serial"
+              ],
+              "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "webUI": {
+            "description": "Whether the charger exposes a local web-based admin/configuration UI, reachable over the local network.",
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "protocol": {
+        "additionalProperties": false,
+        "description": "A single communication protocol implemented by the charger, with the specific feature profiles/extensions it supports.",
+        "if": {
+          "properties": {
+            "name": {
+              "const": "other"
+            }
+          }
+        },
+        "properties": {
+          "certifications": {
+            "description": "Formal certifications tied specifically to this protocol/version (e.g. an OCA OCPP conformance certificate, an ISO 15118 security certification). Certifications that apply to the product as a whole rather than one protocol belong in metadata.certificates instead.",
+            "items": {
+              "$ref": "#/$defs/metadata/certificate"
+            },
+            "type": "array"
+          },
+          "configuration": {
+            "description": "Configuration keys/settings surfaced by this specific protocol (e.g. OCPP configuration keys like 'HeartbeatInterval'). Settings that aren't tied to one protocol belong in the top-level software.configuration instead.",
+            "items": {
+              "$ref": "#/$defs/software/configurationOption"
+            },
+            "type": "array"
+          },
+          "name": {
+            "$ref": "#/$defs/software/protocolName"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "otherName": {
+            "description": "Required when name is 'other': the proprietary or unlisted protocol's name.",
+            "type": "string"
+          },
+          "profiles": {
+            "description": "Supported feature profiles/functional blocks for this protocol (e.g. OCPP 1.6 profiles: Core, FirmwareManagement, LocalAuthListManagement, Reservation, SmartCharging, RemoteTrigger; OCPI modules: locations, sessions, cdrs, tariffs).",
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "securityProfile": {
+            "description": "e.g. OCPP security profile 0-3 ('Unsecured Transport', 'Basic Authentication', 'TLS with Basic Authentication', 'TLS with Client Certificates').",
+            "type": "string"
+          },
+          "transport": {
+            "items": {
+              "enum": [
+                "json",
+                "soap",
+                "xml",
+                "websocket",
+                "http",
+                "https",
+                "tcp",
+                "can"
+              ],
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "version": {
+            "$ref": "#/$defs/common/semanticVersion"
+          }
+        },
+        "required": [
+          "name",
+          "version"
+        ],
+        "then": {
+          "required": [
+            "name",
+            "version",
+            "otherName"
+          ]
+        },
+        "type": "object"
+      },
+      "protocolName": {
+        "description": "Well-known communication protocol/standard names. Use 'other' plus the 'otherName' sibling field for anything not listed.",
+        "enum": [
+          "OCPP",
+          "OCPI",
+          "OSCP",
+          "ISO15118",
+          "IEC61851",
+          "DIN70121",
+          "OpenADR",
+          "IEEE2030.5",
+          "EEBus",
+          "Modbus-TCP",
+          "Modbus-RTU",
+          "SunSpec",
+          "MQTT",
+          "REST-API",
+          "SNMP",
+          "other"
+        ],
+        "type": "string"
+      },
+      "smartCharging": {
+        "additionalProperties": false,
+        "properties": {
+          "features": {
+            "description": "'local-load-balancing': balancing across connectors/chargers without backend involvement. 'backend-managed-profiles': can accept and enforce charging profiles/schedules pushed by a backend (e.g. OCPP SetChargingProfile). 'v2g'/'v2h': vehicle-to-grid/vehicle-to-home bidirectional power flow.",
+            "items": {
+              "enum": [
+                "local-load-balancing",
+                "backend-managed-profiles",
+                "dynamic-pricing",
+                "v2g",
+                "v2h",
+                "solar-integration"
+              ],
+              "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "scheduleTypes": {
+            "items": {
+              "enum": [
+                "absolute",
+                "recurring-daily",
+                "recurring-weekly",
+                "relative"
+              ],
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "software": {
+        "additionalProperties": false,
+        "description": "Complete software/firmware capability specification of the charger.",
+        "properties": {
+          "configuration": {
+            "description": "Configuration keys/settings not tied to a specific protocol (e.g. a site-configurable current cap enforced regardless of which protocol is in use). Protocol-specific settings belong on that protocol entry instead (software.protocols[].configuration).",
+            "items": {
+              "$ref": "#/$defs/software/configurationOption"
+            },
+            "type": "array"
+          },
+          "firmware": {
+            "$ref": "#/$defs/software/firmware"
+          },
+          "integration": {
+            "$ref": "#/$defs/software/integration"
+          },
+          "offlineChargingSupported": {
+            "description": "Whether the charger can authorize and run charging sessions without a live backend/CSMS connection (standalone/offline mode).",
+            "type": "boolean"
+          },
+          "operatingSystem": {
+            "description": "e.g. 'Linux 5.10 (Yocto)', 'FreeRTOS', 'proprietary RTOS'.",
+            "type": "string"
+          },
+          "protocols": {
+            "items": {
+              "$ref": "#/$defs/software/protocol"
+            },
+            "minItems": 0,
+            "type": "array"
+          },
+          "smartCharging": {
+            "$ref": "#/$defs/software/smartCharging"
+          }
+        },
+        "type": "object"
+      }
+    }
+  },
+  "$id": "https://oecs.dev/schema/1.0.0/oecs.1.0.0.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "description": "Root schema for a single EV charger's functional and technical specification, covering hardware, software, payment, and provenance/compliance metadata. See /docs/GUIDELINE.md for the narrative guide to this schema. Bundled, self-contained form generated by scripts/bundle.go -- do not edit directly.",
+  "properties": {
+    "$schema": {
+      "format": "uri",
+      "type": "string"
+    },
+    "hardware": {
+      "$ref": "#/$defs/hardware/hardware"
+    },
+    "manufacturer": {
+      "additionalProperties": false,
+      "properties": {
+        "contact": {
+          "$ref": "#/$defs/common/contact"
+        },
+        "country": {
+          "description": "ISO 3166-1 alpha-2 country code of the manufacturer's headquarters.",
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "type": "object"
+    },
+    "metadata": {
+      "$ref": "#/$defs/metadata/metadata"
+    },
+    "model": {
+      "additionalProperties": false,
+      "properties": {
+        "brandingOptions": {
+          "description": "Branding customization available to a network operator/reseller who wants to brand the unit as their own rather than the manufacturer's.",
+          "items": {
+            "enum": [
+              "white-label",
+              "custom-faceplate",
+              "customizable-ui",
+              "custom-led-color"
+            ],
+            "type": "string"
+          },
+          "type": "array",
+          "uniqueItems": true
+        },
+        "hardwareRevision": {
+          "type": "string"
+        },
+        "level": {
+          "description": "Power/speed tier within the type, e.g. 'Level 1', 'Level 2' (SAE J1772 AC tiers), 'DC Fast', 'DC Ultra-Fast', 'HPC'. Free text since tier terminology varies by standard/region.",
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "partNumber": {
+          "type": "string"
+        },
+        "productImageUrl": {
+          "$ref": "#/$defs/common/uri"
+        },
+        "releaseDate": {
+          "$ref": "#/$defs/common/isoDate"
+        },
+        "series": {
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "pre-release",
+            "active",
+            "discontinued",
+            "end-of-life"
+          ],
+          "type": "string"
+        },
+        "type": {
+          "description": "Fundamental charging technology.",
+          "enum": [
+            "AC",
+            "DC",
+            "portable-evse",
+            "wireless"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "type": "object"
+    },
+    "payment": {
+      "$ref": "#/$defs/payment/payment"
+    },
+    "software": {
+      "$ref": "#/$defs/software/software"
+    },
+    "version": {
+      "const": "1.0.0",
+      "description": "Version of the OECS schema this document conforms to.",
+      "type": "string"
+    }
+  },
+  "required": [
+    "version",
+    "manufacturer",
+    "model",
+    "hardware"
+  ],
+  "title": "Open EV Charger Specification (OECS)",
+  "type": "object"
+}
