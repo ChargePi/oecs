@@ -1,0 +1,209 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://oecs.dev/schema/1.1.0/hardware.schema.json",
+  "title": "OECS Hardware Definitions",
+  "description": "Defines the physical/hardware specification of an EV charger: housing, electrical input/output, protection, connectors, user interface, connectivity, and safety systems.",
+  "$defs": {
+    "housing": {
+      "type": "object",
+      "description": "Enclosure and mechanical characteristics.",
+      "properties": {
+        "formFactor": {
+          "type": "string",
+          "description": "Physical mounting/enclosure style. 'freestanding' covers self-contained units that stand on their own base on the ground (posts, columns, larger cabinets); 'cabinet' is for a separate power-electronics enclosure in split systems, paired with a smaller wall- or freestanding-mounted user-facing dispenser.",
+          "enum": ["wall-mounted", "freestanding", "pole-mounted", "ceiling-mounted", "portable", "cabinet"]
+        },
+        "material": {
+          "type": "string",
+          "enum": ["aluminum", "stainless-steel", "powder-coated-steel", "polycarbonate", "abs-plastic", "composite", "other"]
+        },
+        "ingressProtection": { "$ref": "common.schema.json#/$defs/ipRating" },
+        "impactRating": { "$ref": "common.schema.json#/$defs/ikRating" },
+        "operatingTemperature": { "$ref": "common.schema.json#/$defs/temperatureRange", "description": "Ambient operating temperature range." },
+        "storageTemperature": { "$ref": "common.schema.json#/$defs/temperatureRange" },
+        "operatingHumidity": { "$ref": "common.schema.json#/$defs/valueRange", "description": "Relative humidity range, unit '%RH'." },
+        "dimensions": { "$ref": "common.schema.json#/$defs/dimensions3D" },
+        "weight": { "$ref": "common.schema.json#/$defs/quantity" },
+        "color": { "type": "string" },
+        "coolingMethod": { "type": "string", "enum": ["passive", "forced-air", "liquid"] },
+        "noiseLevel": { "$ref": "common.schema.json#/$defs/quantity", "description": "Acoustic noise emission, unit typically 'dBA'." }
+      },
+      "additionalProperties": false
+    },
+    "electricalInput": {
+      "type": "object",
+      "description": "Characteristics of the grid/supply connection feeding the charger.",
+      "properties": {
+        "phases": { "type": "integer", "enum": [1, 2, 3] },
+        "voltage": { "$ref": "common.schema.json#/$defs/valueRange", "description": "Unit typically 'V'." },
+        "frequency": { "$ref": "common.schema.json#/$defs/valueRange", "description": "Unit typically 'Hz'." },
+        "maxCurrent": { "$ref": "common.schema.json#/$defs/quantity", "description": "Maximum input current draw, unit typically 'A'." },
+        "connectionType": { "type": "string", "enum": ["hardwired", "plug-in"], "description": "Whether the unit is permanently hardwired to the supply or connects via an industrial plug." },
+        "powerFactor": { "type": "number", "minimum": 0, "maximum": 1 },
+        "efficiency": { "type": "number", "minimum": 0, "maximum": 100, "description": "Rated AC-to-DC (or pass-through) conversion efficiency in percent, at rated load." },
+        "standbyPower": { "$ref": "common.schema.json#/$defs/quantity", "description": "Idle/standby power draw, unit typically 'W'." }
+      },
+      "additionalProperties": false
+    },
+    "powerOutput": {
+      "type": "object",
+      "description": "Aggregate power delivery capability of the charger (a single connector's individual rating is described in the connector object).",
+      "properties": {
+        "minPower": { "$ref": "common.schema.json#/$defs/quantity" },
+        "maxPower": { "$ref": "common.schema.json#/$defs/quantity" },
+        "ratedOutputCurrent": { "$ref": "common.schema.json#/$defs/valueRange", "description": "Unit typically 'A'." },
+        "ratedOutputVoltage": { "$ref": "common.schema.json#/$defs/valueRange", "description": "Unit typically 'V'. Relevant primarily for DC chargers." },
+        "simultaneousChargingSupported": { "type": "boolean", "description": "Only meaningful when there are 2+ connectors. True if more than one connector can actively deliver power at once; false if a second connector just queues behind the first (only one session runs at a time even though multiple connectors exist)." },
+        "dynamicPowerSharing": { "type": "boolean", "description": "Only meaningful when there are 2+ connectors. Whether the charger dynamically splits/reallocates its total power budget across concurrently active sessions, rather than each connector having a fixed independent rating." }
+      },
+      "additionalProperties": false
+    },
+    "protection": {
+      "type": "object",
+      "description": "Electrical protection and safety devices built into the charger.",
+      "properties": {
+        "residualCurrentDevice": {
+          "type": "object",
+          "properties": {
+            "types": {
+              "type": "array",
+              "items": { "type": "string", "enum": ["AC", "A", "B", "F", "integrated-6mA-DC"] },
+              "description": "RCD/RCM types integrated, per IEC 62955 / IEC 60755 classification."
+            },
+            "ratedResidualCurrent": { "$ref": "common.schema.json#/$defs/quantity", "description": "Unit typically 'mA'." },
+            "external": { "type": "boolean", "description": "True if RCD protection must be supplied externally (upstream) rather than being integrated." }
+          },
+          "additionalProperties": false
+        },
+        "surgeProtection": { "type": "string", "description": "SPD class per IEC 61643, e.g. 'Type 1', 'Type 2', 'Type 1+2'. Omit if the charger has no surge protection device." },
+        "overVoltageCategory": { "type": "string", "enum": ["I", "II", "III", "IV"], "description": "IEC 60664-1 overvoltage category." },
+        "features": {
+          "type": "array",
+          "description": "Protection features present, beyond RCD/surge/overvoltage handled by the more detailed fields above. 'insulation-monitoring' (IMD) is typically required on DC chargers.",
+          "items": { "type": "string", "enum": ["overcurrent", "short-circuit", "insulation-monitoring", "ground-fault", "over-temperature", "overload"] },
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "electrical": {
+      "type": "object",
+      "description": "The charger's electrical characteristics: grid supply (input), delivery capability (output), and protection devices, grouped together since all three describe the same electrical system.",
+      "properties": {
+        "input": { "$ref": "#/$defs/electricalInput" },
+        "output": { "$ref": "#/$defs/powerOutput" },
+        "protection": { "$ref": "#/$defs/protection" }
+      },
+      "additionalProperties": false
+    },
+    "display": {
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "enum": ["none", "led-indicator", "led-segment", "monochrome-lcd", "color-lcd", "touchscreen"] },
+        "size": { "$ref": "common.schema.json#/$defs/quantity", "description": "Diagonal screen size, unit typically 'cm'." },
+        "resolution": { "type": "string", "description": "e.g. '800x480'." }
+      },
+      "additionalProperties": false
+    },
+    "userInterface": {
+      "type": "object",
+      "properties": {
+        "display": { "$ref": "#/$defs/display" },
+        "authenticationMethods": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["rfid", "mobile-app", "plug-and-charge-iso15118", "credit-card", "qr-code", "ocpp-remote-start", "pin-code", "autostart-free-vend"]
+          },
+          "uniqueItems": true
+        },
+        "languageSupport": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[a-zA-Z]{2,3}(-[a-zA-Z0-9]{2,8})*$" },
+          "description": "BCP 47 language tags supported by the on-device UI."
+        },
+        "audioFeedback": { "type": "boolean" },
+        "accessibilityFeatures": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["audio-guidance", "braille", "adjustable-height", "high-contrast-mode", "wheelchair-accessible-clearance"] }
+        }
+      },
+      "additionalProperties": false
+    },
+    "connectivity": {
+      "type": "object",
+      "description": "Physical/network connectivity hardware, distinct from the application-layer protocols described in the software specification.",
+      "properties": {
+        "interfaces": {
+          "type": "array",
+          "description": "Physical interfaces present besides Wi-Fi/cellular, which are detailed separately below. 'powerline-communication' is PLC per ISO 15118 / IEC 61851, used for HLC over the charging cable's CP/PP lines.",
+          "items": { "type": "string", "enum": ["ethernet", "bluetooth", "rs485", "can-bus", "powerline-communication"] },
+          "uniqueItems": true
+        },
+        "wifi": {
+          "type": "array",
+          "description": "Supported Wi-Fi standards. Omit the field (or leave empty) if the charger has no Wi-Fi radio.",
+          "items": { "type": "string", "enum": ["802.11a", "802.11b", "802.11g", "802.11n", "802.11ac", "802.11ax"] }
+        },
+        "cellular": {
+          "type": "object",
+          "description": "Omit this field entirely if the charger has no cellular radio.",
+          "properties": {
+            "generations": { "type": "array", "items": { "type": "string", "enum": ["2G", "3G", "4G-LTE", "5G", "NB-IoT", "LTE-M"] } },
+            "simSlots": { "type": "integer", "minimum": 0 },
+            "esim": { "type": "boolean" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "meter": {
+      "type": "object",
+      "description": "The charger's primary energy meter, used for session metering and (where billing-grade) invoicing.",
+      "properties": {
+        "integrated": { "type": "boolean", "description": "True if the meter is built into the charger; false if metering is provided by a separate, externally installed meter." },
+        "manufacturer": { "type": "string" },
+        "model": { "type": "string" },
+        "accuracyClass": { "type": "string", "description": "e.g. 'Class B (MID)', 'Class 1 (IEC 62053-21)'." },
+        "certification": { "type": "string", "description": "Legal metrology certification, e.g. 'MID (2014/32/EU)', 'ANSI C12.20', 'Eichrecht'. Its presence is what makes metering suitable for direct billing/invoicing; omit if the meter has no such certification." }
+      },
+      "additionalProperties": false
+    },
+    "safety": {
+      "type": "object",
+      "properties": {
+        "features": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["emergency-stop", "tamper-detection", "anti-theft-lock"] },
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "hardware": {
+      "type": "object",
+      "description": "Complete hardware specification of the charger.",
+      "properties": {
+        "housing": { "$ref": "#/$defs/housing" },
+        "electrical": { "$ref": "#/$defs/electrical" },
+        "connectors": {
+          "type": "array",
+          "items": { "$ref": "connector.schema.json#/$defs/connector" },
+          "minItems": 1
+        },
+        "userInterface": { "$ref": "#/$defs/userInterface" },
+        "connectivity": { "$ref": "#/$defs/connectivity" },
+        "safety": { "$ref": "#/$defs/safety" },
+        "meter": { "$ref": "#/$defs/meter" },
+        "certifications": {
+          "type": "array",
+          "description": "Formal certifications tied to the hardware/enclosure as a whole (e.g. safety, EMC, type approval). Certifications specific to a single protocol belong on that protocol entry instead (software.protocols[].certifications); certifications that don't fit either place (e.g. company-wide quality management) belong in metadata.certificates.",
+          "items": { "$ref": "metadata.schema.json#/$defs/certificate" }
+        }
+      },
+      "required": ["connectors"],
+      "additionalProperties": false
+    }
+  }
+}

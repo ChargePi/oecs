@@ -1,6 +1,6 @@
 {
-  "$schema": "https://oecs.dev/schema/1.0.0/charger.schema.json",
-  "version": "1.0.0",
+  "$schema": "https://oecs.dev/schema/1.1.0/charger.schema.json",
+  "version": "1.1.0",
   "manufacturer": {
     "name": "VoltGrid GmbH",
     "country": "DE",
@@ -210,6 +210,13 @@
   "payment": {
     "acceptedMethods": ["mobile-app", "rfid-prepaid", "backend-invoicing"],
     "adHocPaymentSupported": false
+  },
+  "pricing": {
+    "pricingModel": "fixed",
+    "prices": [
+      { "region": "DE", "value": 2490, "currency": "EUR" },
+      { "region": "US", "value": 2690, "currency": "USD" }
+    ]
   },
   "metadata": {
     "sources": [

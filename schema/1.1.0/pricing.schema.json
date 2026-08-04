@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://oecs.dev/schema/1.1.0/pricing.schema.json",
+  "title": "OECS Pricing Definitions",
+  "description": "The manufacturer's own published pricing for this model — the Manufacturer's Suggested Retail Price (MSRP), never a distributor/reseller/installer price.",
+  "$defs": {
+    "regionalPrice": {
+      "type": "object",
+      "description": "An MSRP amount, optionally scoped to one region/market.",
+      "properties": {
+        "region": {
+          "type": "string",
+          "description": "ISO 3166-1 alpha-2 country code, or a broader grouping such as 'EU' when the manufacturer prices by group rather than country. Omit when a single price applies globally."
+        },
+        "value": { "type": "number", "minimum": 0 },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$",
+          "description": "ISO 4217 three-letter currency code, e.g. 'EUR', 'USD'."
+        }
+      },
+      "required": ["value", "currency"],
+      "additionalProperties": false
+    },
+    "pricing": {
+      "type": "object",
+      "description": "The manufacturer's MSRP for this model. Some manufacturers don't publish a fixed price at all (negotiated, on-request, or varies too much to state); use pricingModel to say so honestly rather than guessing a number.",
+      "properties": {
+        "pricingModel": {
+          "type": "string",
+          "enum": ["fixed", "enquiry"],
+          "description": "'fixed' — one or more MSRP prices are published, given in prices, optionally broken down by region. 'enquiry' — manufacturer doesn't publish a fixed price (negotiated, on-request, or otherwise not a single published number); see notes for how to get a quote."
+        },
+        "prices": {
+          "type": "array",
+          "description": "Manufacturer's Suggested Retail Price(s). A single entry with no region for one global MSRP, or multiple region-scoped entries when price varies by market. Only present when pricingModel is 'fixed'.",
+          "items": { "$ref": "#/$defs/regionalPrice" },
+          "minItems": 1
+        },
+        "notes": {
+          "type": "string",
+          "description": "Free-text context, e.g. how to request a quote, or what an on-request price depends on."
+        }
+      },
+      "required": ["pricingModel"],
+      "additionalProperties": false,
+      "if": { "properties": { "pricingModel": { "const": "fixed" } } },
+      "then": { "required": ["prices"] },
+      "else": { "not": { "required": ["prices"] } }
+    }
+  }
+}

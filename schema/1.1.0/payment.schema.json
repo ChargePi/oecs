@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://oecs.dev/schema/1.1.0/payment.schema.json",
+  "title": "OECS Payment Definitions",
+  "description": "Defines how a driver can pay for a charging session: accepted payment methods, ad-hoc (no app/subscription) payment support, and any integrated payment terminal hardware.",
+  "$defs": {
+    "paymentMethod": {
+      "type": "string",
+      "description": "A way a driver can pay for a session, distinct from how they authenticate/start it (see hardware.userInterface.authenticationMethods).",
+      "enum": [
+        "contactless-card",
+        "mobile-wallet",
+        "rfid-prepaid",
+        "mobile-app",
+        "plug-and-charge-autocharge",
+        "backend-invoicing",
+        "free-of-charge"
+      ]
+    },
+    "paymentTerminal": {
+      "type": "object",
+      "description": "Integrated payment card terminal hardware, if the charger accepts card payment directly rather than relying solely on an app/backend.",
+      "properties": {
+        "manufacturer": { "type": "string" },
+        "model": { "type": "string" },
+        "cardReaderTypes": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["contactless-emv", "chip-pin", "magstripe"] }
+        },
+        "pciCompliance": { "type": "string", "description": "e.g. 'PCI PTS 5.x', 'PCI DSS'." }
+      },
+      "additionalProperties": false
+    },
+    "payment": {
+      "type": "object",
+      "description": "Complete payment capability specification of the charger.",
+      "properties": {
+        "acceptedMethods": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/paymentMethod" },
+          "uniqueItems": true
+        },
+        "adHocPaymentSupported": {
+          "type": "boolean",
+          "description": "Whether a driver can pay without a pre-existing app, subscription, or RFID card (e.g. tap a contactless bank card). Required for public DC chargers under regulations such as the EU AFIR."
+        },
+        "terminal": { "$ref": "#/$defs/paymentTerminal" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

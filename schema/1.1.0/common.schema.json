@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://oecs.dev/schema/1.1.0/common.schema.json",
+  "title": "OECS Common Definitions",
+  "description": "Reusable primitive types shared across the Open EV Charger Specification (OECS) schema modules: quantities, ranges, ratings, dates, and identity/reference primitives.",
+  "$defs": {
+    "quantity": {
+      "type": "object",
+      "description": "A numeric value paired with its unit of measure.",
+      "properties": {
+        "value": { "type": "number" },
+        "unit": { "type": "string", "description": "Unit of measure, e.g. 'A', 'V', 'kW', 'kWh', 'mm', 'kg'." }
+      },
+      "required": ["value", "unit"],
+      "additionalProperties": false
+    },
+    "valueRange": {
+      "type": "object",
+      "description": "A minimum/maximum/nominal numeric range with a shared unit.",
+      "properties": {
+        "min": { "type": "number" },
+        "max": { "type": "number" },
+        "nominal": { "type": "number" },
+        "unit": { "type": "string" }
+      },
+      "required": ["unit"],
+      "additionalProperties": false,
+      "anyOf": [
+        { "required": ["min"] },
+        { "required": ["max"] },
+        { "required": ["nominal"] }
+      ]
+    },
+    "temperatureRange": {
+      "type": "object",
+      "description": "A minimum/maximum/nominal temperature range.",
+      "properties": {
+        "min": { "type": "number" },
+        "max": { "type": "number" },
+        "nominal": { "type": "number" },
+        "unit": { "type": "string", "enum": ["C", "F"], "description": "Celsius or Fahrenheit." }
+      },
+      "required": ["unit"],
+      "additionalProperties": false,
+      "anyOf": [
+        { "required": ["min"] },
+        { "required": ["max"] },
+        { "required": ["nominal"] }
+      ]
+    },
+    "dimensions3D": {
+      "type": "object",
+      "description": "Physical enclosure dimensions.",
+      "properties": {
+        "height": { "type": "number", "minimum": 0 },
+        "width": { "type": "number", "minimum": 0 },
+        "depth": { "type": "number", "minimum": 0 },
+        "unit": { "type": "string", "enum": ["mm", "cm", "m", "in"], "default": "mm" }
+      },
+      "required": ["height", "width", "depth", "unit"],
+      "additionalProperties": false
+    },
+    "semanticVersion": {
+      "type": "string",
+      "description": "A semantic version string (SemVer 2.0.0) or, where the underlying standard does not use SemVer, the vendor/standard's native version identifier (e.g. '1.6', '2.0.1', 'ISO 15118-2:2014').",
+      "pattern": "^[0-9A-Za-z .:+_-]+$"
+    },
+    "ipRating": {
+      "type": "string",
+      "description": "IEC 60529 Ingress Protection rating, e.g. 'IP54', 'IP65'.",
+      "pattern": "^IP[0-9X][0-9X]([A-Z])?$"
+    },
+    "ikRating": {
+      "type": "string",
+      "description": "IEC 62262 mechanical impact protection rating, e.g. 'IK08', 'IK10'.",
+      "pattern": "^IK(0[0-9]|10)$"
+    },
+    "isoDate": {
+      "type": "string",
+      "format": "date",
+      "description": "Calendar date in ISO 8601 form, YYYY-MM-DD."
+    },
+    "dateTime": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp in ISO 8601 / RFC 3339 form."
+    },
+    "uri": {
+      "type": "string",
+      "format": "uri",
+      "description": "Absolute URI/URL."
+    },
+    "checksum": {
+      "type": "object",
+      "description": "Integrity hash for a referenced document or file.",
+      "properties": {
+        "algorithm": { "type": "string", "enum": ["sha256", "sha384", "sha512", "sha1", "md5"] },
+        "value": { "type": "string" }
+      },
+      "required": ["algorithm", "value"],
+      "additionalProperties": false
+    },
+    "contact": {
+      "type": "object",
+      "description": "A point of contact for an organization or document.",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "phone": { "type": "string" },
+        "website": { "$ref": "#/$defs/uri" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

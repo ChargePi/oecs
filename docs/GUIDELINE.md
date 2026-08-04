@@ -1,6 +1,6 @@
 # OECS Guideline
 
-This is the narrative companion to `schema/1.0.0/charger.schema.json`. The schema is the source of truth for field
+This is the narrative companion to `schema/1.1.0/charger.schema.json`. The schema is the source of truth for field
 names, types, and constraints (every field carries a `description`); this document explains *why* the schema is shaped
 the way it is and how to fill one out from real-world source material.
 
@@ -18,14 +18,15 @@ or certification report.
   hardware,                            // physical/electrical spec (required)
   software,                            // protocols, firmware, config (optional)
   payment,                             // accepted payment methods, terminal (optional)
+  pricing,                             // manufacturer's MSRP, or enquiry-only (optional, 1.1.0+)
   metadata                             // sources, certificates, provenance (optional)
 }
 ```
 
-`hardware` is required because every charger has *some* physical form; `software`, `payment`, and `metadata` are
-optional so you can publish a partial spec (e.g. hardware-only, before software details are confirmed) and fill it in
-incrementally. Prefer omitting a field entirely over guessing a value — an absent field is honest; a wrong one is worse
-than no data.
+`hardware` is required because every charger has *some* physical form; `software`, `payment`, `pricing`, and
+`metadata` are optional so you can publish a partial spec (e.g. hardware-only, before software details are
+confirmed) and fill it in incrementally. Prefer omitting a field entirely over guessing a value — an absent field is
+honest; a wrong one is worse than no data.
 
 ## Conventions used throughout
 
@@ -152,6 +153,18 @@ regulatory compliance: public DC chargers in the EU (AFIR) and increasingly othe
 without requiring an app or subscription. `terminal` is only relevant if the charger has its own integrated card reader
 rather than relying entirely on an app/backend for billing.
 
+### `pricing` (1.1.0+)
+
+The manufacturer's own MSRP (Manufacturer's Suggested Retail Price) — deliberately never a distributor, reseller, or
+installer price, which vary by market and relationship and aren't a property of the product itself. `pricingModel`
+states which of two honest states applies: `fixed` means one or more MSRPs are published, listed in `prices`; `enquiry`
+means the manufacturer doesn't publish a fixed price at all (negotiated, on-request, or otherwise not a single number)
+— use `notes` to say how to get a quote rather than inventing a figure. `prices` is a list rather than a single amount
+because MSRP commonly varies by market: give a single entry with no `region` for one global price, or one entry per
+region (e.g. `"DE"`, `"US"`, or a broader grouping like `"EU"`) when it varies. Omit `pricing` entirely if you don't
+know the manufacturer's pricing stance at all — that's different from stating `enquiry`, which is itself a fact about
+the product ("this manufacturer doesn't publish pricing"), not an admission of missing data.
+
 ### `metadata`
 
 - **`sources`** — the documents this specification instance was compiled from (datasheet, manual, technical spec,
@@ -166,7 +179,9 @@ rather than relying entirely on an app/backend for billing.
 
 ## Extending the schema
 
-Prefer additive changes: new optional properties, new enum values, new `$defs`. Reserve a new `schema/<version>/`
-directory for anything that removes a field, tightens a constraint, or otherwise breaks existing valid documents, and
-bump `version` accordingly. See the examples in `examples/` before and after any schema change — they're the fastest way
+Prefer additive changes: new optional properties, new enum values, new `$defs`. Once a `schema/<version>/` directory is
+published, treat it as frozen — even an additive change goes into a new minor version directory (`1.0.0` → `1.1.0`)
+rather than being added in place, so a document that validated against `1.0.0` keeps validating against `1.0.0`
+forever. Reserve a major version bump for anything that removes a field, tightens a constraint, or otherwise breaks
+existing valid documents. See the examples in `examples/` before and after any schema change — they're the fastest way
 to confirm a change is actually additive.
