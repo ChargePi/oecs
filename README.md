@@ -12,7 +12,9 @@ One OECS document describes one charger **model** - a machine-readable counterpa
 ```
 schema/1.0.0/           JSON Schema (draft 2020-12), split into modules
 schema/1.1.0/           Adds pricing (see Versioning below)
+schema/1.1.1/           Extracts manufacturer into its own module, adds manufacturer.logoUrl (patch, see Versioning)
   charger.schema.json      root document schema — start here
+  manufacturer.schema.json manufacturer identity, country, logo, contact (1.1.1+ only, split out of charger.schema.json)
   hardware.schema.json     housing, electrical I/O, protection, UI, connectivity, safety
   connector.schema.json    per-connector (plug) definition
   software.schema.json     firmware, protocols/profiles, smart charging, configuration
@@ -23,8 +25,8 @@ schema/1.1.0/           Adds pricing (see Versioning below)
 
 examples/                Example documents validated against the schema
   minimal.json              smallest valid document (1.0.0)
-  ac-wallbox-full.json      AC Level 2 wallbox with regional pricing, most fields populated (1.1.0)
-  dc-fast-charger-full.json DC fast charger with two connectors (CCS2 + CHAdeMO), enquiry-only pricing (1.1.0)
+  ac-wallbox-full.json      AC Level 2 wallbox with regional pricing, most fields populated (1.1.1)
+  dc-fast-charger-full.json DC fast charger with two connectors (CCS2 + CHAdeMO), enquiry-only pricing (1.1.1)
 
 docs/GUIDELINE.md        Narrative guide: how to fill out a spec, field-by-field
 
@@ -49,11 +51,14 @@ removes `dist/`.
 
 ## Versioning
 
-Schema modules live under a version directory (`schema/1.0.0/`, `schema/1.1.0/`, ...), following semver: a minor bump
-(`1.0.0` → `1.1.0`) adds new optional fields/`$defs` without touching anything already committed to `schema/1.0.0/`,
-so existing `1.0.0` documents keep validating unchanged; a major bump gets its own directory for anything that removes
-a field, tightens a constraint, or otherwise breaks existing valid documents. Documents declare `version` and validate
-against the schema version they were written for.
+Schema modules live under a version directory (`schema/1.0.0/`, `schema/1.1.0/`, `schema/1.1.1/`, ...), following
+semver: a patch bump (`1.1.0` → `1.1.1`) covers changes that don't add a new capability a document could rely on —
+reorganizing `$defs` across modules (e.g. splitting a section out into its own file) or a small optional field riding
+along with such a reorganization; a minor bump (`1.0.0` → `1.1.0`) adds new optional fields/`$defs`/segments without
+touching anything already committed to the prior version; a major bump gets its own directory for anything that
+removes a field, tightens a constraint, or otherwise breaks existing valid documents. In every case, existing
+documents written for a prior version keep validating unchanged. Documents declare `version` and validate against the
+schema version they were written for.
 
 ## Contributing
 

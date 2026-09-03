@@ -1,9 +1,10 @@
 {
-  "$schema": "https://oecs.dev/schema/1.1.0/charger.schema.json",
-  "version": "1.1.0",
+  "$schema": "https://oecs.dev/schema/1.1.1/charger.schema.json",
+  "version": "1.1.1",
   "manufacturer": {
     "name": "Ionwave Charging Systems",
     "country": "NL",
+    "logoUrl": "https://ionwave.example/brand/logo.png",
     "contact": {
       "name": "Ionwave OEM Support",
       "email": "oem-support@ionwave.example",

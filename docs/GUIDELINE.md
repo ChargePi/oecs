@@ -1,6 +1,6 @@
 # OECS Guideline
 
-This is the narrative companion to `schema/1.1.0/charger.schema.json`. The schema is the source of truth for field
+This is the narrative companion to `schema/1.1.1/charger.schema.json`. The schema is the source of truth for field
 names, types, and constraints (every field carries a `description`); this document explains *why* the schema is shaped
 the way it is and how to fill one out from real-world source material.
 
@@ -72,7 +72,12 @@ certificate to back a guess.
 
 ### `manufacturer` / `model`
 
-Product identity. `model.type` (`AC` / `DC` / `portable-evse` / `wireless`) plus `model.level` (a free-text power/speed
+Product identity. `manufacturer` lives in its own module (`manufacturer.schema.json`, 1.1.1+) since it's an
+independent facet of identity from `model` — the same manufacturer profile (name, country, `logoUrl`, `contact`)
+applies across every model that vendor sells, distinct from the per-product fields in `model`. `logoUrl` points at the
+manufacturer's brand logo, as distinct from `model.productImageUrl`, which is a photo/render of the specific product.
+
+`model.type` (`AC` / `DC` / `portable-evse` / `wireless`) plus `model.level` (a free-text power/speed
 tier like `'Level 2'` or `'DC Fast'`) give a coarse classification for filtering a catalog of specs at a glance — the
 real power figures live in `hardware.electrical.output`. `level` is free text rather than an enum because tier
 terminology varies by standard and region (SAE J1772 "Level 1/2" vs. informal "DC Fast/Ultra-Fast" marketing tiers).
@@ -180,8 +185,11 @@ the product ("this manufacturer doesn't publish pricing"), not an admission of m
 ## Extending the schema
 
 Prefer additive changes: new optional properties, new enum values, new `$defs`. Once a `schema/<version>/` directory is
-published, treat it as frozen — even an additive change goes into a new minor version directory (`1.0.0` → `1.1.0`)
-rather than being added in place, so a document that validated against `1.0.0` keeps validating against `1.0.0`
-forever. Reserve a major version bump for anything that removes a field, tightens a constraint, or otherwise breaks
-existing valid documents. See the examples in `examples/` before and after any schema change — they're the fastest way
-to confirm a change is actually additive.
+published, treat it as frozen — even a small change goes into a new version directory rather than being added in
+place, so a document that validated against a prior version keeps validating against it forever. Bump the patch
+version (`1.1.0` → `1.1.1`) for a change that adds no new capability a document could rely on — reorganizing `$defs`
+across modules (e.g. splitting `manufacturer` out of `charger.schema.json` into its own module), optionally alongside
+a small optional field riding along with that reorganization. Bump the minor version (`1.0.0` → `1.1.0`) for a change
+that adds a genuinely new optional segment or field on its own. Reserve a major version bump for anything that removes
+a field, tightens a constraint, or otherwise breaks existing valid documents. See the examples in `examples/` before
+and after any schema change — they're the fastest way to confirm a change is actually non-breaking.
