@@ -1,9 +1,10 @@
 {
-  "$schema": "https://oecs.dev/schema/1.1.0/charger.schema.json",
-  "version": "1.1.0",
+  "$schema": "https://oecs.dev/schema/1.1.1/charger.schema.json",
+  "version": "1.1.1",
   "manufacturer": {
     "name": "VoltGrid GmbH",
     "country": "DE",
+    "logoUrl": "https://voltgrid.example/brand/logo.svg",
     "contact": {
       "name": "VoltGrid Technical Support",
       "email": "support@voltgrid.example",
