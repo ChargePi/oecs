@@ -17,15 +17,12 @@
     },
     "protocolName": {
       "type": "string",
-      "description": "Well-known communication protocol/standard names. Use 'other' plus the 'otherName' sibling field for anything not listed.",
+      "description": "Well-known communication protocol/standard names implemented by the charger itself. Use 'other' plus the 'otherName' sibling field for anything not listed. Backend-to-backend protocols the charger doesn't itself speak (e.g. OCPI, OSCP, OpenADR) don't belong here.",
       "enum": [
         "OCPP",
-        "OCPI",
-        "OSCP",
         "ISO15118",
         "IEC61851",
         "DIN70121",
-        "OpenADR",
         "IEEE2030.5",
         "EEBus",
         "Modbus-TCP",
@@ -46,15 +43,20 @@
         "version": { "$ref": "common.schema.json#/$defs/semanticVersion" },
         "transport": {
           "type": "array",
-          "items": { "type": "string", "enum": ["json", "soap", "xml", "websocket", "http", "https", "tcp", "can"] }
+          "description": "Transport protocol paired with the message/payload format it carries, as 'transport/format' (e.g. 'websocket/json' for OCPP-J, 'tcp/xml' for ISO 15118/DIN 70121's V2GTP, 'tcp/modbus' for Modbus-TCP). 'can' stands alone for raw CAN-bus signaling, which has no separate payload-format layer. Use 'other' plus the sibling 'transportOtherName' field for a combination not listed (e.g. a REST API serialized as protobuf).",
+          "items": {
+            "type": "string",
+            "enum": ["http/json", "http/xml", "http/soap", "https/json", "https/xml", "https/soap", "websocket/json", "tcp/xml", "tcp/modbus", "serial/modbus", "can", "other"]
+          }
         },
+        "transportOtherName": { "type": "string", "description": "Required when transport includes 'other'; the transport/format combination as printed on the datasheet." },
         "securityProfile": {
           "type": "string",
           "description": "e.g. OCPP security profile 0-3 ('Unsecured Transport', 'Basic Authentication', 'TLS with Basic Authentication', 'TLS with Client Certificates')."
         },
         "profiles": {
           "type": "array",
-          "description": "Supported feature profiles/functional blocks for this protocol (e.g. OCPP 1.6 profiles: Core, FirmwareManagement, LocalAuthListManagement, Reservation, SmartCharging, RemoteTrigger; OCPI modules: locations, sessions, cdrs, tariffs).",
+          "description": "Supported feature profiles/functional blocks for this protocol (e.g. OCPP 1.6 profiles: Core, FirmwareManagement, LocalAuthListManagement, Reservation, SmartCharging, RemoteTrigger).",
           "items": { "type": "string" },
           "uniqueItems": true
         },
@@ -72,8 +74,36 @@
       },
       "required": ["name", "version"],
       "additionalProperties": false,
-      "if": { "properties": { "name": { "const": "other" } } },
-      "then": { "required": ["name", "version", "otherName"] }
+      "allOf": [
+        {
+          "if": { "properties": { "name": { "const": "other" } } },
+          "then": { "required": ["name", "version", "otherName"] }
+        },
+        {
+          "if": { "properties": { "name": { "enum": ["OCPP", "Modbus-TCP", "Modbus-RTU", "MQTT", "REST-API"] } } },
+          "then": { "required": ["transport"] }
+        },
+        {
+          "if": { "properties": { "name": { "const": "OCPP" } } },
+          "then": { "properties": { "transport": { "items": { "enum": ["http/soap", "https/soap", "websocket/json"] } } } }
+        },
+        {
+          "if": { "properties": { "name": { "const": "Modbus-TCP" } } },
+          "then": { "properties": { "transport": { "items": { "enum": ["tcp/modbus"] } } } }
+        },
+        {
+          "if": { "properties": { "name": { "const": "Modbus-RTU" } } },
+          "then": { "properties": { "transport": { "items": { "enum": ["serial/modbus"] } } } }
+        },
+        {
+          "if": { "properties": { "name": { "const": "REST-API" } } },
+          "then": { "properties": { "transport": { "items": { "enum": ["http/json", "http/xml", "https/json", "https/xml", "other"] } } } }
+        },
+        {
+          "if": { "required": ["transport"], "properties": { "transport": { "contains": { "const": "other" } } } },
+          "then": { "required": ["transportOtherName"] }
+        }
+      ]
     },
     "smartCharging": {
       "type": "object",
