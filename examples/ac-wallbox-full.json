@@ -1,6 +1,6 @@
 {
-  "$schema": "https://oecs.dev/schema/1.1.1/charger.schema.json",
-  "version": "1.1.1",
+  "$schema": "https://oecs.dev/schema/2.0.0/charger.schema.json",
+  "version": "2.0.0",
   "manufacturer": {
     "name": "VoltGrid GmbH",
     "country": "DE",
@@ -83,7 +83,7 @@
           "cooling": "none"
         },
         "connectorLock": true,
-        "meterAccuracyClass": "Class B (MID)",
+        "meterAccuracyClass": "MID_B",
         "isoPlugAndCharge": false,
         "bidirectional": false
       }
@@ -109,7 +109,7 @@
       "integrated": true,
       "manufacturer": "Elster",
       "model": "AS1440",
-      "accuracyClass": "Class B (MID)",
+      "accuracyClass": "MID_B",
       "certification": "MID (2014/32/EU)"
     },
     "certifications": [
@@ -142,7 +142,7 @@
       {
         "name": "OCPP",
         "version": "1.6",
-        "transport": ["json", "websocket"],
+        "transport": ["websocket/json"],
         "securityProfile": "3 - TLS with Client Certificates",
         "profiles": ["Core", "FirmwareManagement", "LocalAuthListManagement", "RemoteTrigger", "SmartCharging", "Reservation"],
         "certifications": [
@@ -171,14 +171,14 @@
       {
         "name": "OCPP",
         "version": "2.0.1",
-        "transport": ["json", "websocket"],
+        "transport": ["websocket/json"],
         "securityProfile": "3 - TLS with Client Certificates",
         "profiles": ["Core", "SmartCharging", "FirmwareManagement", "ISO15118Support"]
       },
       {
         "name": "ISO15118",
         "version": "ISO 15118-2:2014",
-        "transport": ["xml"],
+        "transport": ["tcp/xml"],
         "profiles": ["Plug&Charge"],
         "notes": "PnC available via optional firmware add-on."
       }
@@ -202,14 +202,15 @@
     ],
     "integration": {
       "webUI": true,
-      "localInterfaces": ["http"],
-      "apiDocumentationUrl": "https://voltgrid.example/docs/local-api"
+      "localInterfaces": [
+        { "type": "http", "documentationUrl": "https://voltgrid.example/docs/local-api" }
+      ]
     },
     "offlineChargingSupported": true,
     "operatingSystem": "Linux 5.10 (Yocto)"
   },
   "payment": {
-    "acceptedMethods": ["mobile-app", "rfid-prepaid", "backend-invoicing"],
+    "acceptedMethods": ["mobile-app", "rfid-prepaid"],
     "adHocPaymentSupported": false
   },
   "pricing": {
