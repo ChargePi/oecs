@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://oecs.dev/schema/2.0.0/manufacturer.schema.json",
+  "title": "OECS Manufacturer Definitions",
+  "description": "Defines the manufacturer of a charger model: identity, headquarters location, logo, and contact point.",
+  "$defs": {
+    "manufacturer": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "country": { "type": "string", "description": "ISO 3166-1 alpha-2 country code of the manufacturer's headquarters." },
+        "logoUrl": { "$ref": "common.schema.json#/$defs/uri", "description": "URL of the manufacturer's logo image." },
+        "contact": { "$ref": "common.schema.json#/$defs/contact" }
+      },
+      "required": ["name"],
+      "additionalProperties": false
+    }
+  }
+}

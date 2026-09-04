@@ -1,6 +1,6 @@
 {
-  "$schema": "https://oecs.dev/schema/1.1.1/charger.schema.json",
-  "version": "1.1.1",
+  "$schema": "https://oecs.dev/schema/2.0.0/charger.schema.json",
+  "version": "2.0.0",
   "manufacturer": {
     "name": "VoltGrid GmbH",
     "country": "DE",
@@ -83,7 +83,7 @@
           "cooling": "none"
         },
         "connectorLock": true,
-        "meterAccuracyClass": "Class B (MID)",
+        "meterAccuracyClass": "MID_B",
         "isoPlugAndCharge": false,
         "bidirectional": false
       }
@@ -109,7 +109,7 @@
       "integrated": true,
       "manufacturer": "Elster",
       "model": "AS1440",
-      "accuracyClass": "Class B (MID)",
+      "accuracyClass": "MID_B",
       "certification": "MID (2014/32/EU)"
     },
     "certifications": [

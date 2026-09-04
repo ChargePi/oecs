@@ -1,6 +1,6 @@
 {
-  "$schema": "https://oecs.dev/schema/1.1.1/charger.schema.json",
-  "version": "1.1.1",
+  "$schema": "https://oecs.dev/schema/2.0.0/charger.schema.json",
+  "version": "2.0.0",
   "manufacturer": {
     "name": "Ionwave Charging Systems",
     "country": "NL",
@@ -83,7 +83,7 @@
           "cooling": "liquid"
         },
         "connectorLock": true,
-        "meterAccuracyClass": "Class B (MID)",
+        "meterAccuracyClass": "MID_B",
         "isoPlugAndCharge": true,
         "bidirectional": false
       },
@@ -101,7 +101,7 @@
           "cooling": "liquid"
         },
         "connectorLock": true,
-        "meterAccuracyClass": "Class B (MID)",
+        "meterAccuracyClass": "MID_B",
         "isoPlugAndCharge": false,
         "bidirectional": true
       }
@@ -128,7 +128,7 @@
       "integrated": true,
       "manufacturer": "EMH Metering",
       "model": "ED350L",
-      "accuracyClass": "Class B (MID)",
+      "accuracyClass": "MID_B",
       "certification": "Eichrecht"
     },
     "certifications": [

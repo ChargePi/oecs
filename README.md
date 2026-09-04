@@ -13,6 +13,8 @@ One OECS document describes one charger **model** - a machine-readable counterpa
 schema/1.0.0/           JSON Schema (draft 2020-12), split into modules
 schema/1.1.0/           Adds pricing (see Versioning below)
 schema/1.1.1/           Extracts manufacturer into its own module, adds manufacturer.logoUrl (patch, see Versioning)
+schema/2.0.0/           Enums + cross-field validation for level/type, connector currentType, and meter accuracy
+                        class; typed unit-of-measure enums (major, see Versioning)
   charger.schema.json      root document schema — start here
   manufacturer.schema.json manufacturer identity, country, logo, contact (1.1.1+ only, split out of charger.schema.json)
   hardware.schema.json     housing, electrical I/O, protection, UI, connectivity, safety
@@ -25,8 +27,8 @@ schema/1.1.1/           Extracts manufacturer into its own module, adds manufact
 
 examples/                Example documents validated against the schema
   minimal.json              smallest valid document (1.0.0)
-  ac-wallbox-full.json      AC Level 2 wallbox with regional pricing, most fields populated (1.1.1)
-  dc-fast-charger-full.json DC fast charger with two connectors (CCS2 + CHAdeMO), enquiry-only pricing (1.1.1)
+  ac-wallbox-full.json      AC Level 2 wallbox with regional pricing, most fields populated (2.0.0)
+  dc-fast-charger-full.json DC fast charger with two connectors (CCS2 + CHAdeMO), enquiry-only pricing (2.0.0)
 
 docs/GUIDELINE.md        Narrative guide: how to fill out a spec, field-by-field
 

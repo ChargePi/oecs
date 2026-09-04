@@ -31,12 +31,15 @@ honest; a wrong one is worse than no data.
 ## Conventions used throughout
 
 **Quantities and ranges.** Numeric values are never bare numbers — they're always `{ "value": ..., "unit": "..." }` (a
-`quantity`) or `{ "min"/"max"/"nominal": ..., "unit": "..." }` (a `valueRange`). This is the single most repeated
+quantity type) or `{ "min"/"max"/"nominal": ..., "unit": "..." }` (a range type). This is the single most repeated
 pattern in the schema; it exists so a consumer never has to guess whether `32` means amps, kW, or millimeters, and so a
-range like "6–32 A" doesn't get flattened into a single misleading number. Most units are free-text strings — use the
-unit as printed on the datasheet (`kW`, `A`, `V`, `%RH`, `mm`, `kg`, `dBA`, `m`, `s`) rather than inventing a symbol.
-Temperature is the one exception: `operatingTemperature`/`storageTemperature` use a dedicated `temperatureRange` type
-with `unit` restricted to `"C"` or `"F"`, so tooling can rely on it instead of parsing free text.
+range like "6–32 A" doesn't get flattened into a single misleading number. Each physical quantity has its own typed
+`$def` in `common.schema.json` with `unit` restricted to a closed enum scoped to that quantity — `currentQuantity`/
+`currentRange` (`A`, `mA`), `powerQuantity` (`W`, `kW`), `voltageRange` (`V`), `frequencyRange` (`Hz`),
+`massQuantity` (`kg`, `lb`), `soundLevelQuantity` (`dBA`, `dB`), `lengthQuantity` (`mm`, `cm`, `m`, `in`, shared with
+`dimensions3D`), `humidityRange` (`%RH`), and `temperatureRange` (`C`, `F`) — so tooling can rely on the unit instead
+of parsing free text. If a datasheet uses a unit outside one of these enums, open an issue/PR to extend the relevant
+enum rather than inventing a new unrestricted field — enum extension is a non-breaking, additive change.
 
 **Enums with an escape hatch.** Closed lists (connector types, protocol names, certificate types) cover the common cases
 so tooling can rely on them, but real hardware surprises you. Where the schema anticipates that (
@@ -77,10 +80,12 @@ independent facet of identity from `model` — the same manufacturer profile (na
 applies across every model that vendor sells, distinct from the per-product fields in `model`. `logoUrl` points at the
 manufacturer's brand logo, as distinct from `model.productImageUrl`, which is a photo/render of the specific product.
 
-`model.type` (`AC` / `DC` / `portable-evse` / `wireless`) plus `model.level` (a free-text power/speed
-tier like `'Level 2'` or `'DC Fast'`) give a coarse classification for filtering a catalog of specs at a glance — the
-real power figures live in `hardware.electrical.output`. `level` is free text rather than an enum because tier
-terminology varies by standard and region (SAE J1772 "Level 1/2" vs. informal "DC Fast/Ultra-Fast" marketing tiers).
+`model.type` (`AC` / `DC` / `portable-evse` / `wireless`) plus `model.level` (a power/speed tier like `'Level 2'` or
+`'DC Fast'`) give a coarse classification for filtering a catalog of specs at a glance — the real power figures live
+in `hardware.electrical.output`. `level` is a closed enum (`Level 1`, `Level 2`, `DC Fast`, `DC Ultra-Fast`, `HPC`)
+whose valid values depend on `type`: `AC` is restricted to `Level 1`/`Level 2` (the SAE J1772 AC tiers), `DC` is
+restricted to `DC Fast`/`DC Ultra-Fast`/`HPC`. `portable-evse` and `wireless` are left unrestricted across the full
+enum since no established tier vocabulary exists for them yet.
 `model.status` tracks product lifecycle (`pre-release` / `active` / `discontinued` / `end-of-life`), useful for flagging
 specs that describe something no longer sold. `brandingOptions` lists customization available to a network
 operator/reseller who wants to brand the unit as their own (a custom faceplate, a rebrandable on-device/app UI, custom
@@ -105,10 +110,14 @@ LED accent color, or a full white-label offering with no manufacturer branding a
       monitoring, ground fault, over-temperature, overload) are collected into one `features` array instead of six
       separate booleans.
 - **`connectors`** — required, at least one entry: a charger with no connector isn't a charger. One entry per physical
-  outlet/plug, each with its own `type` (CCS2, CHAdeMO, Type 2, NACS, etc.), `currentType` (AC/DC), and ratings. `label`
-  is a free-text human identifier for readability only (e.g. `"CCS2 outlet A"`) — it is **not** required to be unique
-  and carries no semantic meaning for tooling; don't build logic that keys off it. If you need to refer to "the
-  connector that supports CCS2," filter by `type`, not by label.
+  outlet/plug, each with its own `type` (CCS2, CHAdeMO, Type 2, NACS, etc.), `currentType` (AC/DC), and ratings. Most
+  connector standards are inherently one or the other, so `type` constrains which `currentType` values are valid:
+  `Type1_J1772`/`Type2_Mennekes`/`Type3A`/`Domestic_Socket`/`Industrial_IEC60309`/`GBT_AC` require `AC`;
+  `CCS1_Combo1`/`CCS2_Combo2`/`CHAdeMO`/`GBT_DC`/`MCS_MegawattChargingSystem` require `DC`. `NACS_Tesla` and `Other`
+  are left unrestricted — NACS physically supports both AC and DC charging through the same connector, and `Other` is
+  a catch-all. `label` is a free-text human identifier for readability only (e.g. `"CCS2 outlet A"`) — it is **not**
+  required to be unique and carries no semantic meaning for tooling; don't build logic that keys off it. If you need
+  to refer to "the connector that supports CCS2," filter by `type`, not by label.
 - **`userInterface`** — the physical HMI: display type, supported authentication methods, language support.
 - **`connectivity`** — the network hardware. `interfaces` is a single array (`ethernet`, `bluetooth`, `rs485`,
   `can-bus`, `powerline-communication`) rather than one boolean per interface; `wifi` and `cellular` stay as their own
@@ -118,7 +127,9 @@ LED accent color, or a full white-label offering with no manufacturer branding a
   `emergency-stop`, `tamper-detection`, `anti-theft-lock`).
 - **`meter`** — the charger's primary energy meter: manufacturer/model, accuracy class, and legal metrology
   certification (MID, Eichrecht, ANSI C12.20, etc.) if it has one. A filled-in `certification` is what makes the meter
-  billing-grade. Separate from `connectors[].meterAccuracyClass`, which covers sub-metering at an individual outlet.
+  billing-grade. `accuracyClass` and `connectors[].meterAccuracyClass` (which covers sub-metering at an individual
+  outlet) share the same closed `meterAccuracyClass` enum (MID A-D, IEC 62053-21/22 classes) with an `other`/
+  `*OtherName` escape hatch for a classification not covered by the enum.
 - **`certifications`** — formal certifications covering the hardware/enclosure as a whole (safety, EMC, type approval),
   each with `type`, `standard`, issuing body, and dates where known.
 
