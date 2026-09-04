@@ -215,8 +215,11 @@
     ],
     "integration": {
       "webUI": true,
-      "localInterfaces": ["http", "modbus", "webhooks"],
-      "apiDocumentationUrl": "https://ionwave.example/docs/integration-api"
+      "localInterfaces": [
+        { "type": "http", "documentationUrl": "https://ionwave.example/docs/integration-api" },
+        { "type": "modbus" },
+        { "type": "webhooks" }
+      ]
     },
     "offlineChargingSupported": true,
     "operatingSystem": "Linux 6.1 (Yocto)"

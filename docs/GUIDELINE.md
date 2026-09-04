@@ -152,10 +152,13 @@ LED accent color, or a full white-label offering with no manufacturer branding a
   the specific values chosen for a given deployment — deployment-specific values belong in your own commissioning
   records, outside the scope of this schema.
 - **`integration`** — interfaces for local administration or building a custom/third-party integration, as distinct from
-  `protocols`. `protocols` is for standardized EV-charging/cloud protocols (OCPP, OCPI, ISO 15118, ...); `integration`
-  covers a local web admin UI (`webUI`) and the transport(s) available for talking to the charger directly (
-  `localInterfaces`: `http`, `grpc`, `mqtt`, `modbus`, `websocket`, `webhooks`, `ssh`, `serial`) — meant for someone
-  building their own tooling against this specific charger rather than a standard protocol.
+  `protocols`. `protocols` is for standardized, charger-implemented EV-charging/cloud protocols (OCPP, ISO 15118, ...);
+  `integration` covers a local web admin UI (`webUI`) and the transport(s) available for talking to the charger
+  directly (`localInterfaces`: `http`, `grpc`, `mqtt`, `modbus`, `websocket`, `webhooks`, `ssh`, `serial`) — meant for
+  someone building their own tooling against this specific charger rather than a standard protocol. Each entry in
+  `localInterfaces` carries its own `type` and optional `documentationUrl`, since a charger exposing more than one
+  interface (e.g. a REST API and an MQTT broker) usually has separate documentation for each rather than one shared
+  link.
 - **`offlineChargingSupported`** — whether the unit can authorize and run sessions without a live backend/CSMS
   connection (standalone/offline mode).
 

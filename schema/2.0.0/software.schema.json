@@ -121,6 +121,16 @@
       },
       "additionalProperties": false
     },
+    "localInterface": {
+      "type": "object",
+      "description": "A single local integration interface exposed for custom/third-party software, with a link to that interface's own documentation, if published.",
+      "properties": {
+        "type": { "type": "string", "enum": ["http", "grpc", "mqtt", "modbus", "websocket", "webhooks", "ssh", "serial"] },
+        "documentationUrl": { "$ref": "common.schema.json#/$defs/uri", "description": "Link to this specific interface's API/integration documentation. Omit if undocumented or not publicly published." }
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
     "integration": {
       "type": "object",
       "description": "Interfaces for local administration or integrating custom/third-party software, as distinct from the standardized EV-charging/cloud protocols listed in `protocols` (e.g. a local REST API used for a proprietary integration belongs here even if it happens to speak the same wire format one of those protocols uses).",
@@ -128,11 +138,10 @@
         "webUI": { "type": "boolean", "description": "Whether the charger exposes a local web-based admin/configuration UI, reachable over the local network." },
         "localInterfaces": {
           "type": "array",
-          "description": "Local integration interfaces exposed for custom software, by protocol/transport.",
-          "items": { "type": "string", "enum": ["http", "grpc", "mqtt", "modbus", "websocket", "webhooks", "ssh", "serial"] },
+          "description": "Local integration interfaces exposed for custom software. A charger implementing more than one (e.g. both a REST API and an MQTT broker) typically has separate documentation for each, so the documentation link lives per-interface rather than once for the whole section.",
+          "items": { "$ref": "#/$defs/localInterface" },
           "uniqueItems": true
-        },
-        "apiDocumentationUrl": { "$ref": "common.schema.json#/$defs/uri" }
+        }
       },
       "additionalProperties": false
     },

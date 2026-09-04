@@ -202,8 +202,9 @@
     ],
     "integration": {
       "webUI": true,
-      "localInterfaces": ["http"],
-      "apiDocumentationUrl": "https://voltgrid.example/docs/local-api"
+      "localInterfaces": [
+        { "type": "http", "documentationUrl": "https://voltgrid.example/docs/local-api" }
+      ]
     },
     "offlineChargingSupported": true,
     "operatingSystem": "Linux 5.10 (Yocto)"
