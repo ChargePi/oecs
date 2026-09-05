@@ -1,6 +1,6 @@
 # OECS Guideline
 
-This is the narrative companion to `schema/1.1.1/charger.schema.json`. The schema is the source of truth for field
+This is the narrative companion to `schema/2.1.0/charger.schema.json`. The schema is the source of truth for field
 names, types, and constraints (every field carries a `description`); this document explains *why* the schema is shaped
 the way it is and how to fill one out from real-world source material.
 
@@ -161,6 +161,16 @@ LED accent color, or a full white-label offering with no manufacturer branding a
   link.
 - **`offlineChargingSupported`** — whether the unit can authorize and run sessions without a live backend/CSMS
   connection (standalone/offline mode).
+- **`compatibleBackends`** (2.1.0+) — CPMS/backend platforms the manufacturer recommends or has verified this charger
+  model to work with (e.g. ChargePoint, Driivz, Ampeco). One entry per backend product, each with a nested `protocols`
+  array claiming compatibility per protocol *and version* rather than the backend as a whole — a vendor's OCPP 1.6
+  support and its OCPP 2.0.1 support are independent claims that can carry different verification levels and different
+  supporting evidence, so collapsing them to just `"OCPP"` would hide that distinction. Each protocol/version claim
+  carries its own `verificationLevel`: `recommended` (the manufacturer states this combination works, unverified) or
+  `verified` (interoperability was independently confirmed, e.g. joint interoperability testing) — the same
+  self-reported-claim-vs-certificate distinction as elsewhere in this schema (see "Certification vs. self-reported
+  capability" above). A `verified` claim can carry its own `certifications` array, placed here rather than in
+  `metadata.certificates` since it certifies this specific backend/protocol pairing rather than the product as a whole.
 
 ### `payment`
 
