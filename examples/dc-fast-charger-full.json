@@ -212,7 +212,7 @@
       {
         "name": "Virta",
         "protocols": [
-          { "protocol": "OCPP", "version": "1.6", "verificationLevel": "recommended" }
+          { "protocol": "OCPP", "version": "2.0.1", "verificationLevel": "recommended" }
         ]
       }
     ],

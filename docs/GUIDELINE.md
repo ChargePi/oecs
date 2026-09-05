@@ -171,6 +171,8 @@ LED accent color, or a full white-label offering with no manufacturer branding a
   self-reported-claim-vs-certificate distinction as elsewhere in this schema (see "Certification vs. self-reported
   capability" above). A `verified` claim can carry its own `certifications` array, placed here rather than in
   `metadata.certificates` since it certifies this specific backend/protocol pairing rather than the product as a whole.
+  Every `compatibleBackends[].protocols[]` entry's protocol/version should also appear in `software.protocols[]` — a
+  backend claim only makes sense for a protocol the charger actually speaks.
 
 ### `payment`
 
