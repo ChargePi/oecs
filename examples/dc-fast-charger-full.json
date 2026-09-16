@@ -1,6 +1,6 @@
 {
-  "$schema": "https://oecs.dev/schema/2.0.0/charger.schema.json",
-  "version": "2.0.0",
+  "$schema": "https://oecs.dev/schema/2.1.0/charger.schema.json",
+  "version": "2.1.0",
   "manufacturer": {
     "name": "Ionwave Charging Systems",
     "country": "NL",
@@ -193,6 +193,26 @@
             "issueDate": "2025-05-15",
             "jurisdiction": "EU"
           }
+        ]
+      }
+    ],
+    "compatibleBackends": [
+      {
+        "name": "Ampeco",
+        "protocols": [
+          {
+            "protocol": "OCPP",
+            "version": "2.0.1",
+            "verificationLevel": "verified",
+            "notes": "Verified via joint interoperability testing with Ampeco.",
+            "documentationUrl": "https://ionwave.example/docs/ampeco-integration"
+          }
+        ]
+      },
+      {
+        "name": "Virta",
+        "protocols": [
+          { "protocol": "OCPP", "version": "2.0.1", "verificationLevel": "recommended" }
         ]
       }
     ],

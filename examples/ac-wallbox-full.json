@@ -1,6 +1,6 @@
 {
-  "$schema": "https://oecs.dev/schema/2.0.0/charger.schema.json",
-  "version": "2.0.0",
+  "$schema": "https://oecs.dev/schema/2.1.0/charger.schema.json",
+  "version": "2.1.0",
   "manufacturer": {
     "name": "VoltGrid GmbH",
     "country": "DE",
@@ -181,6 +181,40 @@
         "transport": ["tcp/xml"],
         "profiles": ["Plug&Charge"],
         "notes": "PnC available via optional firmware add-on."
+      }
+    ],
+    "compatibleBackends": [
+      {
+        "name": "ChargePoint",
+        "protocols": [
+          {
+            "protocol": "OCPP",
+            "version": "1.6",
+            "verificationLevel": "verified",
+            "notes": "Verified via OCA Plugfest interoperability testing.",
+            "documentationUrl": "https://voltgrid.example/docs/chargepoint-integration",
+            "certifications": [
+              {
+                "type": "protocol-conformance",
+                "standard": "OCPP 1.6 Interoperability",
+                "issuingBody": "Open Charge Alliance",
+                "issueDate": "2024-05-14"
+              }
+            ]
+          },
+          {
+            "protocol": "OCPP",
+            "version": "2.0.1",
+            "verificationLevel": "recommended",
+            "notes": "Vendor states OCPP 2.0.1 compatibility; not independently tested."
+          }
+        ]
+      },
+      {
+        "name": "Driivz",
+        "protocols": [
+          { "protocol": "OCPP", "version": "1.6", "verificationLevel": "recommended" }
+        ]
       }
     ],
     "smartCharging": {
