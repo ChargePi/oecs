@@ -1,6 +1,6 @@
 # OECS Guideline
 
-This is the narrative companion to `schema/2.1.0/charger.schema.json`. The schema is the source of truth for field
+This is the narrative companion to `schema/2.2.0/charger.schema.json`. The schema is the source of truth for field
 names, types, and constraints (every field carries a `description`); this document explains *why* the schema is shaped
 the way it is and how to fill one out from real-world source material.
 
@@ -93,6 +93,17 @@ LED accent color, or a full white-label offering with no manufacturer branding a
 
 ### `hardware`
 
+- **`platform`** (2.2.0+) — the electronics platform the model is built on: the controller board and firmware line a
+  manufacturer shares across several models (e.g. Alfen's NG-Platform vs. AHP-Platform). Firmware releases, known
+  issues, security advisories and configuration keys usually follow the platform rather than the model, so this is
+  what lets a consumer find every model affected by one platform's firmware release. Group documents by
+  `manufacturer.name` + `platform.name`, and copy `name` exactly as the manufacturer publishes it — there's no
+  central registry of platform identifiers, so the manufacturer's own spelling is the only key independent authors
+  will reliably agree on. Don't confuse it with `model.series`, which is a *commercial* range (two models in the same
+  series can sit on different platforms), or `model.hardwareRevision`, which is a revision of this one model. The
+  platform is a single object rather than a list: if a model moves to a different board, that's a new hardware
+  revision and a new document. Platform lifecycle (e.g. end of firmware support) isn't modelled here — it's a fact
+  about the platform, and copying it into every model document would let the copies drift apart.
 - **`housing`** — enclosure, mounting, environmental ratings. `ingressProtection` and `impactRating` are validated
   against the `IPxx` / `IKxx` patterns (IEC 60529 / IEC 62262) — copy them straight off the datasheet.
 - **`electrical`** — everything about the charger's electrical system, grouped into three sub-objects since they're all
@@ -135,7 +146,9 @@ LED accent color, or a full white-label offering with no manufacturer branding a
 
 ### `software`
 
-- **`firmware`** — current version and update mechanism, not a changelog.
+- **`firmware`** — current version and update mechanism, not a changelog. When `hardware.platform` is set,
+  `currentVersion` is a version of that platform's firmware line — the platform is recorded once, under `hardware`,
+  rather than repeated here.
 - **`protocols`** — one entry per communication protocol/standard, each with `version` and a `profiles` array listing
   the specific feature blocks supported (e.g. OCPP 1.6's `Core`, `SmartCharging`, `RemoteTrigger`; OCPI's `locations`,
   `cdrs`, `tariffs`). `profiles` is intentionally free-text rather than a fixed enum per protocol — the set of profiles

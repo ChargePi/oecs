@@ -17,9 +17,11 @@ schema/2.0.0/           Enums + cross-field validation for level/type, connector
                         class; typed unit-of-measure enums (major, see Versioning)
 schema/2.1.0/           Adds software.compatibleBackends: manufacturer-declared CPMS/backend compatibility,
                         per protocol/version (minor, see Versioning)
+schema/2.2.0/           Adds hardware.platform: the electronics platform (controller board + firmware line) shared
+                        by several models (minor, see Versioning)
   charger.schema.json      root document schema — start here
   manufacturer.schema.json manufacturer identity, country, logo, contact (1.1.1+ only, split out of charger.schema.json)
-  hardware.schema.json     housing, electrical I/O, protection, UI, connectivity, safety
+  hardware.schema.json     platform (2.2.0+), housing, electrical I/O, protection, UI, connectivity, safety
   connector.schema.json    per-connector (plug) definition
   software.schema.json     firmware, protocols/profiles, smart charging, configuration, compatible backends (2.1.0+)
   payment.schema.json      accepted payment methods, ad-hoc payment, terminal hardware
@@ -29,8 +31,8 @@ schema/2.1.0/           Adds software.compatibleBackends: manufacturer-declared 
 
 examples/                Example documents validated against the schema
   minimal.json              smallest valid document (1.0.0)
-  ac-wallbox-full.json      AC Level 2 wallbox with regional pricing, most fields populated (2.1.0)
-  dc-fast-charger-full.json DC fast charger with two connectors (CCS2 + CHAdeMO), enquiry-only pricing (2.1.0)
+  ac-wallbox-full.json      AC Level 2 wallbox with regional pricing, most fields populated (2.2.0)
+  dc-fast-charger-full.json DC fast charger with two connectors (CCS2 + CHAdeMO), enquiry-only pricing (2.2.0)
 
 docs/GUIDELINE.md        Narrative guide: how to fill out a spec, field-by-field
 
