@@ -1,6 +1,6 @@
 {
-  "$schema": "https://oecs.dev/schema/2.1.0/charger.schema.json",
-  "version": "2.1.0",
+  "$schema": "https://oecs.dev/schema/2.2.0/charger.schema.json",
+  "version": "2.2.0",
   "manufacturer": {
     "name": "Ionwave Charging Systems",
     "country": "NL",

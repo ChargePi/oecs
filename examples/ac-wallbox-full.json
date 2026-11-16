@@ -1,6 +1,6 @@
 {
-  "$schema": "https://oecs.dev/schema/2.1.0/charger.schema.json",
-  "version": "2.1.0",
+  "$schema": "https://oecs.dev/schema/2.2.0/charger.schema.json",
+  "version": "2.2.0",
   "manufacturer": {
     "name": "VoltGrid GmbH",
     "country": "DE",
@@ -25,6 +25,11 @@
     "brandingOptions": ["custom-faceplate", "customizable-ui"]
   },
   "hardware": {
+    "platform": {
+      "name": "VG-Core2",
+      "controller": "VG-CB200",
+      "documentationUrl": "https://example.com/support/platforms/vg-core2"
+    },
     "housing": {
       "formFactor": "wall-mounted",
       "material": "aluminum",
